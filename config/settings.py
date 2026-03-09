@@ -7,13 +7,16 @@ env = environ.Env()
 environ.Env.read_env(env.str(root(), '.env'))
 
 TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN", default=None)
-TELEGRAM_CHAT_ID   = env.str("TELEGRAM_CHAT_ID",   default=None)
+TELEGRAM_GROUP_ID   = env.str("TELEGRAM_GROUP_ID",   default=None)
+TELEGRAM_TOPIC_ID   = env.str("TELEGRAM_TOPIC_ID",   default=None)
 
 # Agar muhim bo'lsa, majburiy qilish mumkin
 if not TELEGRAM_BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN .env faylda yo'q!")
-if not TELEGRAM_CHAT_ID:
-    raise ValueError("TELEGRAM_CHAT_ID .env faylda yo'q!")
+if not TELEGRAM_GROUP_ID:
+    raise ValueError("TELEGRAM_GROUP_ID .env faylda yo'q!")
+if not TELEGRAM_TOPIC_ID:
+    raise ValueError("TELEGRAM_TOPIC_ID .env faylda yo'q!")
 
 SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)

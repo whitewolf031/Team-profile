@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { MdLocationOn, MdEmail, MdPhone } from "react-icons/md"; // Material Design icons
 import { FaAlignJustify, FaCode } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/Home.css";
 
@@ -9,20 +10,19 @@ function Home() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [profile, setProfile] = useState(null);
-    const [experience, setExperience] = useState([]);
     const [projects, setProjects] = useState([]);
     const [activeSection, setActiveSection] = useState("home");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const sections = ["home", "about", "experience", "skills", "projects", "contact", "blog"];
+    const navigate = useNavigate();
 
     const achievementColors = ['#2563eb', '#16a34a', '#f97316'];
     const responsibilityColors = ['#a855f7', '#ef4444', '#eab308'];
 
     useEffect(() => {
         getProfile();
-        getExperience();
         getProject();
 
         const handleScroll = () => {
@@ -46,26 +46,24 @@ function Home() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    // getProfile ni o'zgartiring — array saqlasin
     const getProfile = async () => {
         try {
             const res = await api.get("/api/dev/info/");
-            console.log(res)
-            setProfile(res.data[0]); // array ichidan birinchi object
+            console.log(res);
+            const data = res.data;
+            // Array yoki object — ikkalasini ham handle qilamiz
+            setProfile(Array.isArray(data) ? data : [data]);
         } catch (err) {
             console.error(err);
         }
     };
 
-    const getExperience = async () => {
-        const res = await api.get("/api/dev/experience/");
-        console.log(res)
-        setExperience(res.data);
-    };
-
     const getProject = async () => {
         const res = await api.get("/api/dev/projects/");
-        console.log(res)
-        setProjects(res.data);
+        console.log(res);
+        const data = res.data;
+        setProjects(Array.isArray(data) ? data : data.results ?? []);
     };
 
     const createContact = async (e) => {
@@ -73,7 +71,7 @@ function Home() {
         setLoading(true);
 
         try {
-            const res = await api.post("/contact/create/", {
+            const res = await api.post("/group/create/", {
             name,
             email,
             message,
@@ -117,7 +115,7 @@ function Home() {
                                 scrollToSection("home");
                             }}
                         >
-                            Sardorbek Ergashev
+                            CYBERNEX
                         </a>
                     </div>
                     <button 
@@ -150,14 +148,14 @@ function Home() {
             <section id="home" className="section hero">
                 <div className="hero-content">
                     <h1 className="hero-title" style={{ fontSize: "70px" }}>
-                        <b>Sardorbek Ergashev</b>
+                        <b>CYBERNEX</b>
                     </h1>
                     <h2 className="hero-subtitle">
-                        Full-Stack Software Engineer
+                        Dasturchilar jamoasi
                     </h2>
                     <p className="hero-description">
-                        Passionate developer with expertise in Python, Django, and Laravel.
-                        Building scalable APIs, Telegram bots, and impactful web applications.
+                        Bu texnologiya, kreativlik va jamoaviy kuch birlashgan makon. 
+                        Biz innovatsiya, raqamli rivoj va kelajak g‘oyalarini birga yaratadigan jamoamiz.
                     </p>
                     <div className="box-button">
                         <a
@@ -180,263 +178,35 @@ function Home() {
 
             {/* ABOUT */}
             <section id="about" className="section section-dark">
-                {profile && (
-                    <div className="section-container grid-2">
-                        {/* LEFT SIDE */}
-                        <div>
-                            <h2>About Me</h2>
-                            <p style={{ fontSize: "18px", lineHeight: "1.6" }}>
-                                {profile.about}
-                            </p>
-                            <p className="info-row">
-                                <MdLocationOn className="info-icon location" />
-                                Tashkent, Uzbekistan
-                            </p>
-                            <p className="info-row">
-                                <MdPhone className="info-icon phone" />
-                                {profile.phone}
-                            </p>
-                            <p className="info-row">
-                                <MdEmail className="info-icon email" />
-                                {profile.email}
-                            </p>
-                        </div>
-                        {/* RIGHT SIDE */}
-                        <div className="card">
-                            <h3 style={{ textAlign: "center", marginBottom: "24px" }}>
-                                Quick Facts
-                            </h3>
-                            <div style={{ display: "grid", gap: "16px" }}>
-                                <div className="flex-between card1">
-                                    <span className="card-text">Experience </span>
-                                    <span style={{ color: "#3b82f6" }}>
-                                        {profile.experience}+ Years
-                                    </span>
-                                </div>
-                                <div className="flex-between card1">
-                                    <span className="card-text">Stack Level </span>
-                                    <span style={{ color: "#4ade80" }}>
-                                        {profile.stack}
-                                    </span>
-                                </div>
-                                <div className="flex-between card1">
-                                    <span className="card-text">Specialization </span>
-                                    <span style={{ color: "#a855f7" }}>
-                                        Full-Stack
-                                    </span>
-                                </div>
-                                <div className="flex-between card1">
-                                    <span className="card-text">Projects Completed </span>
-                                    <span style={{ color: "#008104" }}>
-                                        10+
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </section>
-
-            {/* EXPERIENCE */}
-            <section id="experience" className="section">
                 <div className="section-container">
-                    <h2 style={{ textAlign: "center", marginBottom: "40px" }}>
-                    Experience
+                    <h2 style={{ textAlign: "center", marginBottom: "40px", fontSize: "2.5rem" }}>
+                        About
                     </h2>
-
-                    {experience.length > 0 ? (
-                    <div className="experiences-grid">
-                        {experience.map((exp) => (
-                        <div key={exp.id} className="experience-card">
-                            {/* Header */}
-                            <div className="experience-header">
-                            <div>
-                                <h3 className="experience-title">{exp.title}</h3>
-                                <p className="experience-company">{exp.company}</p>
-                            </div>
-                            <p className="experience-location">📍 {exp.location}</p>
-                            </div>
-
-                            <div className="experience-meta">
-                            <span>
-                                ⏳ {exp.start_date} — {exp.is_current ? "Present" : exp.end_date}
-                            </span>
-                            <span>{exp.employment_type}</span>
-                            </div>
-
-                            {/* Details */}
-                            <div className="experience-details">
-                            <div className="achievements-column">
-                                <h4>Key Achievements</h4>
-                                {exp.achievements?.split("\n").filter(Boolean).map((item, index) => (
-                                <div key={index} className="achievement-item">
-                                    <span className="bullet" style={{ color: achievementColors[index % 3] }}>
-                                    ●
-                                    </span>
-                                    <span>{item}</span>
+                    {profile && profile.length > 0 && (
+                        <div className="about-cards-grid">
+                            {profile.map((person, index) => (
+                                <div key={person.id || index} className="about-card">
+                                    <h3 className="about-card-name">{person.full_name}</h3>
+                                    <p className="about-card-about">
+                                        {person.about?.length > 120
+                                            ? person.about.slice(0, 1000)
+                                            : person.about}
+                                    </p>
+                                    <div className="about-card-info">
+                                        <span><MdLocationOn /> Tashkent, Uzbekistan</span>
+                                        <span><MdPhone /> {person.phone}</span>
+                                        <span><MdEmail /> {person.email}</span>
+                                    </div>
+                                    <button
+                                        className="about-more-btn"
+                                        onClick={() => navigate(`/profile/${person.id || index}`)}
+                                    >
+                                        ↗ More
+                                    </button>
                                 </div>
-                                ))}
-                            </div>
-
-                            <div className="responsibilities-column">
-                                <h4>Responsibilities</h4>
-                                {exp.responsibilities?.split("\n").filter(Boolean).map((item, index) => (
-                                <div key={index} className="responsibility-item">
-                                    <span className="bullet" style={{ color: responsibilityColors[index % 3] }}>
-                                    ●
-                                    </span>
-                                    <span>{item}</span>
-                                </div>
-                                ))}
-                            </div>
-                            </div>
+                            ))}
                         </div>
-                        ))}
-                    </div>
-                    ) : (
-                    <div className="empty-experience">
-                        <div className="empty-card">
-                        <div className="empty-icon">🚀</div>
-                        <h3>Building the future, one line of code at a time</h3>
-                        <p>
-                            I'm actively working on exciting projects and gaining hands-on experience 
-                            in full-stack development. Check back soon — new adventures are being written!
-                        </p>
-                        <p className="subtitle">
-                            Currently crafting scalable solutions with Django, PostgreSQL, React & more...
-                        </p>
-                        </div>
-                    </div>
                     )}
-                </div>
-            </section>
-
-            {/* SKILLS */}
-            <section id="skills" className="section section-dark">
-                <div className="section-container">
-                    <h2 style={{ textAlign: "center", marginBottom: "50px", fontSize: "2.5rem" }}>
-                    Skills
-                    </h2>
-
-                    <div className="skills-grid">
-                    {/* 1. Languages */}
-                    <div className="skill-category-card">
-                        <div className="category-header">
-                        <span className="category-icon">{"< />"}</span>
-                        <h3>Languages</h3>
-                        </div>
-                        <div className="skill-list">
-                        <div className="skill-item">
-                            <span className="skill-name">Python</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress python" style={{ width: "95%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="skill-item">
-                            <span className="skill-name">PHP</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress php" style={{ width: "70%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="skill-item">
-                            <span className="skill-name">JavaScript</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress javascript" style={{ width: "65%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-
-                    {/* 2. Frameworks */}
-                    <div className="skill-category-card">
-                        <div className="category-header">
-                        <span className="category-icon">{"{ }"}</span>
-                        <h3>Frameworks</h3>
-                        </div>
-                        <div className="skill-list">
-                        <div className="skill-item">
-                            <span className="skill-name">Django</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress django" style={{ width: "92%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="skill-item">
-                            <span className="skill-name">Laravel</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress laravel" style={{ width: "68%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="skill-item">
-                            <span className="skill-name">FastAPI</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress fastapi" style={{ width: "80%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-
-                    {/* 3. Databases */}
-                    <div className="skill-category-card">
-                        <div className="category-header">
-                        <span className="category-icon">🗄</span>
-                        <h3>Databases</h3>
-                        </div>
-                        <div className="skill-list">
-                        <div className="skill-item">
-                            <span className="skill-name">PostgreSQL</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress postgresql" style={{ width: "88%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="skill-item">
-                            <span className="skill-name">MySQL</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress mysql" style={{ width: "65%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="skill-item">
-                            <span className="skill-name">SQLite</span>
-                            <div className="progress-container">
-                            <div className="progress-bar">
-                                <div className="progress sqlite" style={{ width: "78%" }}></div>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-
-                    {/* 4. Tools */}
-                    <div className="skill-category-card">
-                        <div className="category-header">
-                        <span className="category-icon">🛠</span>
-                        <h3>Tools</h3>
-                        </div>
-                        <div className="skill-list tools-list">
-                        <div className="tool-item">Docker</div>
-                        <div className="tool-item">Git & GitHub</div>
-                        <div className="tool-item">Linux</div>
-                        <div className="tool-item">REST APIs</div>
-                        <div className="tool-item">Telegram Bot API</div>
-                        <div className="tool-item">Agile & Scrum</div>
-                        </div>
-                    </div>
-                    </div>
                 </div>
             </section>
 

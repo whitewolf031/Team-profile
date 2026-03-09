@@ -29,7 +29,8 @@
     font-size: 22px;
     font-family: Tahoma, sans-serif;
     font-weight: bold;
-
+    color: #00e5ff;
+    text-shadow: 0 0 20px rgba(0, 229, 255, 0.8), 0 0 40px rgba(0, 229, 255, 0.4);
     text-decoration: none;
     cursor: pointer;
 }
@@ -59,6 +60,15 @@
     color: #60a5fa;
     border-bottom: 2px solid #60a5fa;
 }
+
+#home {
+  background-image: url("../assets/CYBERNEX.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
 /* ===== HERO ===== */
 .hero {
     min-height: 75vh;
@@ -70,78 +80,172 @@
 .hero-content {
     position: relative;
     max-width: 64rem;
-    padding: 20px;
     margin-top: 70px;
-    background: #111827;
     color: white;
     opacity: 0;
     transform: translateY(40px);
     animation: fadeUp 1s ease forwards;
+    background: rgba(15, 20, 30, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    border: 1px solid rgba(0, 200, 255, 0.15);
+    border-radius: 12px;
+    padding: 48px 56px;
 }
+
 @keyframes fadeUp {
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
+
 /* Elegant heading font */
 .hero-title {
     font-family: Tahoma;
     font-weight: bolder;
-    letter-spacing: 1px;
-    color: white;
+    letter-spacing: 3px;
+    color: #00e5ff;
+    text-shadow: 0 0 20px rgba(0, 229, 255, 0.8), 0 0 40px rgba(0, 229, 255, 0.4);
 }
-/* Subtitle style */
+
 .hero-subtitle {
     font-size: 22px;
     font-family: 'Montserrat', sans-serif;
-    color: #d1d5db;
+    color: #ffffff;
     margin-top: 10px;
     text-align: center;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    letter-spacing: 2px;
 }
-/* Description text */
+
 .hero-description {
     font-size: 18px;
-    color: #9ca3af;
+    color: #e2e8f0;
     max-width: 700px;
     line-height: 1.7;
     margin-top: 20px;
     text-align: center;
+    text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.9);
 }
+
 .hero-bg {
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at top left, rgba(37,99,235,0.2), #111827, rgba(34,197,94,0.2));
 }
+
 /* Gradient Text */
 .gradient-text {
     background: linear-gradient(to right, #60a5fa, white, #4ade80);
     -webkit-background-clip: text;
     color: transparent;
 }
+
 /* ===== SECTIONS ===== */
 .section {
     padding: 80px 20px;
     font-family: Tahoma;
 }
+
+/* ===== ABOUT CARDS ===== */
+.about-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.about-card {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.28s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-8px);
+    border-color: #60a5fa;
+    box-shadow: 0 12px 32px rgba(96, 165, 250, 0.18);
+}
+
+.about-card-name {
+    color: #60a5fa;
+    font-size: 1.45rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.about-card-about {
+    color: #d1d5db;
+    font-size: 1rem;
+    line-height: 1.6;
+    flex: 1;
+    margin: 0;
+}
+
+.about-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.about-card-info span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: #93c5fd;
+}
+
+.about-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #60a5fa;
+    font-weight: 500;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 4px;
+    transition: all 0.2s;
+    font-family: Tahoma, sans-serif;
+}
+
+.about-more-btn:hover {
+    color: #93c5fd;
+    transform: translateX(4px);
+}
+
 .section-dark {
     background: rgba(31,41,55,0.5);
 }
+
 .section-container {
     max-width: 72rem;
     margin: auto;
 }
+
 /* Grid */
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 48px;
 }
+
 .grid-4 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 32px;
 }
+
 /* Cards */
 .card {
     background: #1f2937;
@@ -150,10 +254,12 @@
     padding: 32px;
     transition: 0.3s;
 }
+
 .card:hover {
     border-color: #3b82f6;
     transform: scale(1.05);
 }
+
 /* Buttons */
 .btn-primary {
     background: linear-gradient(to right, #2563eb, #16a34a);
@@ -163,6 +269,7 @@
     color: white;
     cursor: pointer;
 }
+
 /* ===== O'zgartirilgan card1 ===== */
 .card1 {
     width: 100%;
@@ -180,6 +287,7 @@
     gap: 10px; /* Matnlar orasida masofa qoldiradi */
     transition: background 0.3s ease;
 }
+
 .card1:hover {
     background-color: rgba(55, 65, 81, 0.9);
 }
