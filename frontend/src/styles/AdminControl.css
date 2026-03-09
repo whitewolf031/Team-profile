@@ -1,0 +1,131 @@
+/* src/styles/AdminControl.css */
+
+/* Faqat admin ichida reset */
+.admin-layout * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.admin-layout {
+  background: #111827;
+  color: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* NAVBAR */
+.admin-navbar {
+  background: #1f2937;
+  padding: 0.8rem 1.5rem;
+  border-bottom: 1px solid #374151;
+}
+
+.admin-navbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-title {
+  color: #60a5fa;
+  font-size: 1.4rem;
+}
+
+.admin-logout-btn {
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+/* BODY */
+.admin-body {
+  display: flex;
+  flex: 1;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+  width: 230px;
+  background: #1f2937;
+  border-right: 1px solid #374151;
+  padding: 1.2rem 0;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+}
+
+.admin-link {
+  display: block;
+  padding: 0.8rem 1.5rem;
+  color: #9ca3af;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.admin-link:hover {
+  background: rgba(96, 165, 250, 0.1);
+  color: #60a5fa;
+}
+
+.admin-link.active {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+  border-left: 3px solid #60a5fa;
+  font-weight: 600;
+}
+
+/* CONTENT */
+.admin-content {
+  flex: 1;
+  padding: 1.5rem 2rem;
+}
+
+.admin-welcome h2 {
+  color: #60a5fa;
+  margin-bottom: 0.5rem;
+}
+
+/* Admin ichidagi boxlar */
+.admin-layout .info-box,
+.admin-layout .experience-box,
+.admin-layout .project-box {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.admin-layout .box-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin-layout .edit-button {
+  background: #2563eb;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-layout .delete-button {
+  background: #dc2626;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
