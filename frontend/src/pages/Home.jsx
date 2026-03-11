@@ -15,7 +15,7 @@ function Home() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
-    const sections = ["home", "about", "experience", "skills", "projects", "contact", "blog"];
+    const sections = ["home", "about", "projects", "contact", "blog"];
     const navigate = useNavigate();
 
     const achievementColors = ['#2563eb', '#16a34a', '#f97316'];
@@ -186,17 +186,20 @@ function Home() {
                         <div className="about-cards-grid">
                             {profile.map((person, index) => (
                                 <div key={person.id || index} className="about-card">
-                                    <h3 className="about-card-name">{person.full_name}</h3>
-                                    <p className="about-card-about">
-                                        {person.about?.length > 120
-                                            ? person.about.slice(0, 1000)
-                                            : person.about}
-                                    </p>
-                                    <div className="about-card-info">
-                                        <span><MdLocationOn /> Tashkent, Uzbekistan</span>
-                                        <span><MdPhone /> {person.phone}</span>
-                                        <span><MdEmail /> {person.email}</span>
+                                    <div className="about-avatar-wrapper">
+                                        {person.avatar ? (
+                                            <img
+                                                src={person.avatar}
+                                                alt={person.full_name}
+                                                className="about-avatar"
+                                            />
+                                        ) : (
+                                            <div className="about-avatar-placeholder">
+                                                {person.full_name?.charAt(0)}
+                                            </div>
+                                        )}
                                     </div>
+                                    <h3 className="about-card-name">{person.full_name}</h3>
                                     <button
                                         className="about-more-btn"
                                         onClick={() => navigate(`/profile/${person.id || index}`)}
