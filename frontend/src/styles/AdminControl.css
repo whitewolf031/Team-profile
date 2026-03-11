@@ -1,131 +1,139 @@
-/* src/styles/AdminControl.css */
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap');
 
-/* Faqat admin ichida reset */
-.admin-layout * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.admin-layout {
-  background: #111827;
-  color: #e5e7eb;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
+  .ac-layout {
+    background: #0a0e1a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Syne', sans-serif;
+  }
 
-/* NAVBAR */
-.admin-navbar {
-  background: #1f2937;
-  padding: 0.8rem 1.5rem;
-  border-bottom: 1px solid #374151;
-}
+  /* ── NAVBAR ── */
+  .ac-nav {
+    background: #111827;
+    border-bottom: 1px solid #1e2d45;
+    padding: 0 2rem;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .ac-nav-brand {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .ac-nav-right { display: flex; align-items: center; gap: 1rem; }
+  .ac-badge {
+    background: rgba(56,189,248,0.08);
+    border: 1px solid rgba(56,189,248,0.2);
+    color: #38bdf8;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .ac-logout {
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.2);
+    color: #f87171;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .ac-logout:hover { background: rgba(248,113,113,0.15); }
 
-.admin-navbar-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  /* ── BODY ── */
+  .ac-body { display: flex; flex: 1; }
 
-.admin-title {
-  color: #60a5fa;
-  font-size: 1.4rem;
-}
+  /* ── SIDEBAR ── */
+  .ac-side {
+    width: 210px;
+    background: #111827;
+    border-right: 1px solid #1e2d45;
+    padding: 1.5rem 0;
+    flex-shrink: 0;
+  }
+  .ac-side-label {
+    font-size: 0.62rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #64748b;
+    letter-spacing: 2px;
+    padding: 0 1.2rem;
+    margin-bottom: 6px;
+    margin-top: 1rem;
+  }
+  .ac-side-label:first-child { margin-top: 0; }
+  .ac-side-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 1.2rem;
+    color: #64748b;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    transition: all 0.18s;
+    border: none;
+    border-left: 3px solid transparent;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+  }
+  .ac-side-btn:hover { color: #e2e8f0; background: rgba(255,255,255,0.03); }
+  .ac-side-btn.active {
+    color: #38bdf8;
+    background: rgba(56,189,248,0.07);
+    border-left-color: #38bdf8;
+  }
 
-.admin-logout-btn {
-  background: linear-gradient(90deg, #3b82f6, #10b981);
-  border: none;
-  padding: 0.5rem 1.2rem;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-}
+  /* ── MAIN ── */
+  .ac-main { flex: 1; padding: 2rem; overflow-y: auto; }
 
-/* BODY */
-.admin-body {
-  display: flex;
-  flex: 1;
-}
-
-/* SIDEBAR */
-.admin-sidebar {
-  width: 230px;
-  background: #1f2937;
-  border-right: 1px solid #374151;
-  padding: 1.2rem 0;
-}
-
-.admin-sidebar ul {
-  list-style: none;
-}
-
-.admin-link {
-  display: block;
-  padding: 0.8rem 1.5rem;
-  color: #9ca3af;
-  text-decoration: none;
-  transition: 0.2s;
-}
-
-.admin-link:hover {
-  background: rgba(96, 165, 250, 0.1);
-  color: #60a5fa;
-}
-
-.admin-link.active {
-  background: rgba(96, 165, 250, 0.15);
-  color: #60a5fa;
-  border-left: 3px solid #60a5fa;
-  font-weight: 600;
-}
-
-/* CONTENT */
-.admin-content {
-  flex: 1;
-  padding: 1.5rem 2rem;
-}
-
-.admin-welcome h2 {
-  color: #60a5fa;
-  margin-bottom: 0.5rem;
-}
-
-/* Admin ichidagi boxlar */
-.admin-layout .info-box,
-.admin-layout .experience-box,
-.admin-layout .project-box {
-  background: #1f2937;
-  border: 1px solid #374151;
-  border-radius: 10px;
-  padding: 1.2rem;
-  margin-bottom: 1.2rem;
-  position: relative;
-}
-
-.admin-layout .box-actions {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.admin-layout .edit-button {
-  background: #2563eb;
-  border: none;
-  padding: 0.4rem 0.9rem;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.admin-layout .delete-button {
-  background: #dc2626;
-  border: none;
-  padding: 0.4rem 0.9rem;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-}
+  /* ── WELCOME ── */
+  .ac-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 1rem;
+    text-align: center;
+  }
+  .ac-welcome-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  .ac-welcome h2 { font-size: 1.6rem; font-weight: 800; color: #e2e8f0; }
+  .ac-welcome p { color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+  .ac-welcome-btns { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center; }
+  .ac-welcome-btn {
+    background: rgba(56,189,248,0.08);
+    border: 1px solid rgba(56,189,248,0.2);
+    color: #38bdf8;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .ac-welcome-btn:hover { background: rgba(56,189,248,0.15); transform: translateY(-2px); }

@@ -1,150 +1,260 @@
-// src/components/admin/ProjectAdmin.jsx
-import { useState, useEffect } from 'react';
-import api from '../../api';
-// import '../../styles/ProjectAdmin.css';
+import { useState, useEffect } from "react";
+import api from "../../api";
 
-function ProjectAdmin() {
-  const [data, setData] = useState([]);
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    project_url: '',
-    technologies: '', // frontendda string sifatida kiritiladi, keyin arrayga aylantiramiz
-  });
-  const [editingId, setEditingId] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+const TECH_CHOICES = [
+  { value: "python",            label: "Python" },
+  { value: "php",               label: "PHP" },
+  { value: "javaScript",        label: "JavaScript" },
+  { value: "pyTelegramBotApi",  label: "pyTelegramBotApi" },
+  { value: "laravel",           label: "Laravel" },
+  { value: "django",            label: "Django" },
+  { value: "react",             label: "React" },
+  { value: "docker",            label: "Docker" },
+  { value: "PosgreSQl",         label: "PostgreSQL" },
+  { value: "MySQL",             label: "MySQL" },
+  { value: "SQLite",            label: "SQLite" },
+];
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = () => {
-    api.get('/api/admin-control/projects/').then((res) => setData(res.data)).catch(console.error);
+const Icon = ({ name }) => {
+  const icons = {
+    plus:  "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
+    edit:  "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z",
+    trash: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z",
+    close: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
+    check: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z",
+    link:  "M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z",
   };
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d={icons[name]} />
+    </svg>
+  );
+};
 
-  const resetForm = () => {
-    setForm({ title: '', description: '', project_url: '', technologies: '' });
-    setEditingId(null);
-    setShowForm(false);
-  };
+const css = `
+  .pr-wrap { font-family: 'Syne', sans-serif; color: #e2e8f0; }
+  .pr-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .pr-title { font-size: 1.5rem; font-weight: 800; }
+  .pr-sub { color: #64748b; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+  .pr-btn-primary { background: linear-gradient(135deg, #38bdf8, #0ea5e9); border: none; color: #0a0e1a; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-family: 'Syne', sans-serif; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+  .pr-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(56,189,248,0.3); }
+  .pr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+  .pr-card { background: #111827; border: 1px solid #1e2d45; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.2s; position: relative; }
+  .pr-card:hover { border-color: rgba(56,189,248,0.3); }
+  .pr-card-name { font-size: 1rem; font-weight: 700; padding-right: 80px; }
+  .pr-card-desc { color: #64748b; font-size: 0.82rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .pr-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .pr-tag { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; }
+  .pr-tag-blue { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); color: #38bdf8; }
+  .pr-card-link { color: #818cf8; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; text-decoration: none; display: flex; align-items: center; gap: 4px; width: fit-content; }
+  .pr-card-link:hover { color: #a5b4fc; text-decoration: underline; }
+  .pr-actions { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 6px; }
+  .pr-btn-icon { background: #1a2235; border: 1px solid #1e2d45; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .pr-btn-icon:hover { color: #38bdf8; border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+  .pr-btn-icon.danger:hover { color: #f87171; border-color: #f87171; background: rgba(248,113,113,0.08); }
+  .pr-empty { text-align: center; padding: 3rem; color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+  .pr-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .pr-modal { background: #111827; border: 1px solid #1e2d45; border-radius: 16px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+  .pr-modal-head { padding: 1.2rem 1.5rem; border-bottom: 1px solid #1e2d45; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: #111827; z-index: 1; }
+  .pr-modal-title { font-size: 1rem; font-weight: 700; }
+  .pr-modal-close { background: none; border: none; color: #64748b; cursor: pointer; display: flex; transition: color 0.2s; }
+  .pr-modal-close:hover { color: #e2e8f0; }
+  .pr-modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .pr-modal-foot { padding: 1rem 1.5rem; border-top: 1px solid #1e2d45; display: flex; gap: 0.75rem; justify-content: flex-end; }
+  .pr-field { display: flex; flex-direction: column; gap: 6px; }
+  .pr-label { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #64748b; letter-spacing: 0.5px; }
+  .pr-input, .pr-textarea { background: #1a2235; border: 1px solid #1e2d45; color: #e2e8f0; padding: 10px 14px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.9rem; transition: border-color 0.2s; width: 100%; }
+  .pr-input:focus, .pr-textarea:focus { outline: none; border-color: #38bdf8; }
+  .pr-textarea { resize: vertical; min-height: 100px; }
+  .pr-tech-choices { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pr-tech-choice { background: #1a2235; border: 1px solid #1e2d45; color: #64748b; padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; transition: all 0.2s; }
+  .pr-tech-choice:hover { border-color: #38bdf8; color: #38bdf8; }
+  .pr-tech-choice.selected { background: rgba(56,189,248,0.12); border-color: #38bdf8; color: #38bdf8; }
+  .pr-tech-preview { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .pr-btn-cancel { background: #1a2235; border: 1px solid #1e2d45; color: #64748b; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 0.85rem; transition: all 0.2s; }
+  .pr-btn-cancel:hover { color: #e2e8f0; }
+  .pr-btn-save { background: linear-gradient(135deg, #38bdf8, #0ea5e9); border: none; color: #0a0e1a; padding: 8px 22px; border-radius: 8px; font-weight: 700; font-family: 'Syne', sans-serif; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+  .pr-btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(56,189,248,0.3); }
+  .pr-btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+`;
 
-  const handleEdit = (item) => {
-    setForm({
-      title: item.title || '',
-      description: item.description || '',
-      project_url: item.project_url || '',
-      technologies: item.technologies ? item.technologies.join(', ') : '',
-    });
-    setEditingId(item.id);
-    setShowForm(true);
-  };
+const EMPTY_FORM = { title: "", description: "", project_url: "", technologies: [] };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Loyihani o‘chirmoqchimisiz?')) return;
-    try {
-      await api.delete(`/api/admin-control/projects/${id}/`);
-      fetchData();
-    } catch (err) {
-      console.error(err);
+export default function ProjectAdmin() {
+  const [data, setData]       = useState([]);
+  const [modal, setModal]     = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [saving, setSaving]   = useState(false);
+  const [form, setForm]       = useState(EMPTY_FORM);
+
+  const load = () =>
+    api.get("/api/admin-control/projects/")
+      .then((res) => setData(Array.isArray(res.data) ? res.data : []))
+      .catch(console.error);
+
+  useEffect(() => { load(); }, []);
+
+  const open = (item = null) => {
+    if (item) {
+      setForm({
+        title:        item.title        || "",
+        description:  item.description  || "",
+        project_url:  item.project_url  || "",
+        technologies: item.technologies || [],
+      });
+      setEditing(item.id);
+    } else {
+      setForm(EMPTY_FORM);
+      setEditing(null);
     }
+    setModal(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const technologiesArray = form.technologies
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean);
+  const close = () => { setModal(false); setEditing(null); };
 
+  // ✅ Toggle texnologiya tanlash
+  const toggleTech = (value) => {
+    const selected = form.technologies.includes(value);
+    const updated  = selected
+      ? form.technologies.filter((t) => t !== value)
+      : [...form.technologies, value];
+    setForm({ ...form, technologies: updated });
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
       const payload = {
-        title: form.title,
-        description: form.description,
-        project_url: form.project_url || null,
-        technologies: technologiesArray,
+        title:        form.title,
+        description:  form.description,
+        project_url:  form.project_url || null,
+        technologies: form.technologies, // ✅ array to'g'ridan-to'g'ri
       };
-
-      if (editingId) {
-        await api.put(`/api/admin-control/projects/${editingId}/`, payload);
-      } else {
-        await api.post('/api/admin-control/projects/', payload);
-      }
-
-      resetForm();
-      fetchData();
-    } catch (err) {
-      console.error(err);
-      alert('Saqlashda xato');
+      if (editing) await api.put(`/api/admin-control/projects/${editing}/`, payload);
+      else         await api.post("/api/admin-control/projects/", payload);
+      close(); load();
+    } catch (e) {
+      console.error("Xato:", e.response?.data);
     }
+    setSaving(false);
   };
+
+  const del = async (id) => {
+    if (!window.confirm("O'chirishni tasdiqlaysizmi?")) return;
+    await api.delete(`/api/admin-control/projects/${id}/`);
+    load();
+  };
+
+  const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   return (
-    <div className="project-admin">
-      <h2>Loyihalar (Projects)</h2>
-      <button className="create-button" onClick={() => setShowForm(true)}>
-        + Yangi loyiha qo'shish
-      </button>
-      <hr className="divider" />
+    <>
+      <style>{css}</style>
+      <div className="pr-wrap">
 
-      {data.length === 0 && <p className="no-data">Ma'lumot yo‘q</p>}
-
-      {data.map((item) => (
-        <div key={item.id} className="project-box">
-          <h3 className="box-title">{item.title}</h3>
-          <p className="box-description">{item.description}</p>
-
-          {item.project_url && (
-            <p>
-              <strong>Link:</strong>{' '}
-              <a href={item.project_url} target="_blank" rel="noopener noreferrer">
-                {item.project_url}
-              </a>
-            </p>
-          )}
-
-          <div className="tech-stack">
-            {item.technologies?.length > 0 ? (
-              item.technologies.map((tech, i) => (
-                <span key={i} className="tech-tag">
-                  {tech}
-                </span>
-              ))
-            ) : (
-              <span className="no-tech">—</span>
-            )}
+        {/* TOP BAR */}
+        <div className="pr-topbar">
+          <div>
+            <div className="pr-title">Projects</div>
+            <div className="pr-sub">// loyihalar</div>
           </div>
-
-          <div className="box-actions">
-            <button className="edit-button" onClick={() => handleEdit(item)}>
-              O‘zgartirish
-            </button>
-            <button className="delete-button" onClick={() => handleDelete(item.id)}>
-              O‘chirish
-            </button>
-          </div>
+          <button className="pr-btn-primary" onClick={() => open()}>
+            <Icon name="plus" /> Yangi qo'shish
+          </button>
         </div>
-      ))}
 
-      {showForm && (
-        <form onSubmit={handleSubmit} className="project-form">
-          <h3>{editingId ? 'Loyihani tahrirlash' : 'Yangi loyiha'}</h3>
+        {/* CARDS GRID */}
+        {data.length === 0 && <div className="pr-empty">// ma'lumot topilmadi</div>}
 
-          <input className="form-input" placeholder="Loyiha nomi" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+        <div className="pr-grid">
+          {data.map((item) => (
+            <div key={item.id} className="pr-card">
+              <div className="pr-actions">
+                <button className="pr-btn-icon" onClick={() => open(item)}><Icon name="edit" /></button>
+                <button className="pr-btn-icon danger" onClick={() => del(item.id)}><Icon name="trash" /></button>
+              </div>
+              <div className="pr-card-name">{item.title}</div>
+              {item.description && <div className="pr-card-desc">{item.description}</div>}
+              {item.technologies?.length > 0 && (
+                <div className="pr-tags">
+                  {item.technologies.map((t, i) => (
+                    <span key={i} className="pr-tag pr-tag-blue">
+                      {TECH_CHOICES.find(c => c.value === t)?.label || t}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {item.project_url && (
+                <a href={item.project_url} target="_blank" rel="noopener noreferrer" className="pr-card-link">
+                  <Icon name="link" /> {item.project_url.replace(/^https?:\/\//, "").slice(0, 40)}
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
 
-          <textarea className="form-textarea" placeholder="Tavsif" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
+        {/* MODAL */}
+        {modal && (
+          <div className="pr-overlay" onClick={(e) => e.target === e.currentTarget && close()}>
+            <div className="pr-modal">
+              <div className="pr-modal-head">
+                <span className="pr-modal-title">{editing ? "Loyihani tahrirlash" : "Yangi loyiha"}</span>
+                <button className="pr-modal-close" onClick={close}><Icon name="close" /></button>
+              </div>
 
-          <input className="form-input" placeholder="Loyiha havolasi (GitHub, demo...)" value={form.project_url} onChange={(e) => setForm({ ...form, project_url: e.target.value })} />
+              <div className="pr-modal-body">
+                <div className="pr-field">
+                  <label className="pr-label">LOYIHA NOMI *</label>
+                  <input className="pr-input" placeholder="Portfolio Website" value={form.title} onChange={f("title")} />
+                </div>
 
-          <input className="form-input" placeholder="Texnologiyalar (vergul bilan ajratilgan)" value={form.technologies} onChange={(e) => setForm({ ...form, technologies: e.target.value })} />
+                <div className="pr-field">
+                  <label className="pr-label">TAVSIF *</label>
+                  <textarea className="pr-textarea" placeholder="Bu loyiha haqida qisqacha..." value={form.description} onChange={f("description")} />
+                </div>
 
-          <div className="form-actions">
-            <button className="save-button" type="submit">Saqlash</button>
-            <button className="cancel-button" type="button" onClick={resetForm}>Bekor qilish</button>
+                {/* ✅ Toggle buttons */}
+                <div className="pr-field">
+                  <label className="pr-label">TEXNOLOGIYALAR</label>
+                  <div className="pr-tech-choices">
+                    {TECH_CHOICES.map((tech) => (
+                      <button
+                        key={tech.value}
+                        type="button"
+                        className={`pr-tech-choice ${form.technologies.includes(tech.value) ? "selected" : ""}`}
+                        onClick={() => toggleTech(tech.value)}
+                      >
+                        {tech.label}
+                      </button>
+                    ))}
+                  </div>
+                  {form.technologies.length > 0 && (
+                    <div className="pr-tech-preview">
+                      {form.technologies.map((t, i) => (
+                        <span key={i} className="pr-tag pr-tag-blue">
+                          {TECH_CHOICES.find(c => c.value === t)?.label || t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pr-field">
+                  <label className="pr-label">LOYIHA HAVOLASI</label>
+                  <input className="pr-input" placeholder="https://github.com/username/repo" value={form.project_url} onChange={f("project_url")} />
+                </div>
+              </div>
+
+              <div className="pr-modal-foot">
+                <button className="pr-btn-cancel" onClick={close}>Bekor qilish</button>
+                <button className="pr-btn-save" onClick={save} disabled={saving || !form.title}>
+                  <Icon name="check" /> {saving ? "Saqlanmoqda..." : "Saqlash"}
+                </button>
+              </div>
+            </div>
           </div>
-        </form>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
-
-export default ProjectAdmin;
