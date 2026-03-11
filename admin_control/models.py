@@ -8,12 +8,25 @@ class DevInfo(models.Model):
     about = models.TextField()
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=50)
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    telegram_chat_id = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.full_name
-
+    
+class UsersInfo(models.Model):
+    dev = models.ForeignKey(
+        'admin_control.DevInfo',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="contacts"
+    )
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Experience(models.Model):
     EMPLOYMENT_TYPE_CHOICES = [
@@ -21,6 +34,13 @@ class Experience(models.Model):
         ('part_time', 'Part-time'),
         ('both', 'Full-time & Part-time'),
     ]
+
+    dev = models.ForeignKey(
+        DevInfo,
+        on_delete=models.CASCADE,
+        related_name="experiences",
+        null=True, blank=True  # mavjud ma'lumotlar uchun
+    )
 
     title = models.CharField(max_length=255)  # Software Engineer (Full-Stack)
     company = models.CharField(max_length=255, blank=True, null=True)  # optional (agar ko'rsatmoqchi bo'lsangiz)
@@ -60,6 +80,14 @@ class Project(models.Model):
         ("MySQL", "MySQL"),
         ("SQLite", "SQLite"),
     ]
+
+    dev = models.ForeignKey(
+        DevInfo,
+        on_delete=models.CASCADE,
+        related_name="projects",
+        null=True, blank=True
+    )
+
     title = models.CharField(max_length=200)  # Proyekt nomi
     description = models.TextField()  # Proyekt haqida qisqacha
     technologies = models.JSONField()

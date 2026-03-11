@@ -42,3 +42,11 @@ class DevProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = "__all__"
+
+class DevInfoDetailSerializer(serializers.ModelSerializer):
+    experiences = DevExperienceSerializer(many=True, read_only=True)
+    projects = DevProjectSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = DevInfo
+        fields = '__all__'

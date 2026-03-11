@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
+import ProfileDetail from "./pages/Profile";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import AdminControl from "./pages/admin/AdminControl";
@@ -13,6 +14,7 @@ function App() {
 
         {/* Public */}
         <Route path="/" element={<Home />} />
+        <Route path="/profile/:id" element={<ProfileDetail />} />
         <Route path="/login" element={<Login />} />
 
         {/* Admin Panel Layout */}
