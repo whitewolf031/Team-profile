@@ -182,34 +182,65 @@ function Home() {
                     <h2 style={{ textAlign: "center", marginBottom: "40px", fontSize: "2.5rem" }}>
                         About
                     </h2>
-                    {profile && profile.length > 0 && (
-                        <div className="about-cards-grid">
-                            {profile.map((person, index) => (
-                                <div key={person.id || index} className="about-card">
+                    {profile && profile.length > 0 && (() => {
+                        // ✅ ID bo'yicha saralash — eng kichik ID har doim birinchi
+                        const sorted = [...profile].sort((a, b) => a.id - b.id);
+                        const main = sorted[0];
+                        const others = sorted.slice(1);
+
+                        return (
+                            <div className={`about-stack ${others.length === 0 ? "single" : "multi"}`}>
+                                {/* Orqa kartalar (2-chi, 3-chi ID lar) */}
+                                {others.map((person, i) => (
+                                    <div
+                                        key={person.id}
+                                        className={`about-card ${i === 0 ? "about-card-left" : "about-card-right"}`}
+                                        onClick={() => navigate(`/profile/${person.id}`)}
+                                    >
+                                        <div className="about-avatar-wrapper">
+                                            {person.avatar ? (
+                                                <img src={person.avatar} alt={person.full_name} className="about-avatar" />
+                                            ) : (
+                                                <div className="about-avatar-placeholder">
+                                                    {person.full_name?.charAt(0)}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <h3 className="about-card-name">{person.full_name}</h3>
+                                        <button className="about-more-btn" onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/profile/${person.id}`);
+                                        }}>
+                                            ↗ More
+                                        </button>
+                                    </div>
+                                ))}
+
+                                {/* O'rtadagi ASOSIY karta (eng kichik ID) — har doim ustida */}
+                                <div
+                                    className="about-card about-card-main"
+                                    onClick={() => navigate(`/profile/${main.id}`)}
+                                >
                                     <div className="about-avatar-wrapper">
-                                        {person.avatar ? (
-                                            <img
-                                                src={person.avatar}
-                                                alt={person.full_name}
-                                                className="about-avatar"
-                                            />
+                                        {main.avatar ? (
+                                            <img src={main.avatar} alt={main.full_name} className="about-avatar" />
                                         ) : (
                                             <div className="about-avatar-placeholder">
-                                                {person.full_name?.charAt(0)}
+                                                {main.full_name?.charAt(0)}
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="about-card-name">{person.full_name}</h3>
-                                    <button
-                                        className="about-more-btn"
-                                        onClick={() => navigate(`/profile/${person.id || index}`)}
-                                    >
+                                    <h3 className="about-card-name">{main.full_name}</h3>
+                                    <button className="about-more-btn" onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/profile/${main.id}`);
+                                    }}>
                                         ↗ More
                                     </button>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                            </div>
+                        );
+                    })()}
                 </div>
             </section>
 
@@ -243,17 +274,6 @@ function Home() {
                                 </div>
                             )}
 
-                            {project.project_url && (
-                                <a
-                                href={project.project_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="project-link"
-                                >
-                                <span className="link-icon">↗</span>
-                                View Project
-                                </a>
-                            )}
                             </div>
                         </div>
                         ))}

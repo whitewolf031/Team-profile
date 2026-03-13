@@ -1,5 +1,5 @@
-from .models import Blog, DevInfo, Experience, Project
-from .serializers import DevBlogSerializer, DevInfoSerializer, DevExperienceSerializer, DevProjectSerializer
+from .models import Blog, DevInfo, Experience, Project, Certificate
+from .serializers import DevBlogSerializer, DevInfoSerializer, DevExperienceSerializer, DevProjectSerializer, CertificateSerializer
 from rest_framework.permissions import IsAdminUser
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -37,4 +37,10 @@ class DevAdminExperienceControl(viewsets.ModelViewSet):
 class DevAdminProjectControl(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = DevProjectSerializer
+    permission_classes = [IsAdminUser]
+
+@extend_schema(tags=['Admin Sertificate control'])
+class DevAdminSertificateControl(viewsets.ModelViewSet):
+    queryset = Certificate.objects.all()
+    serializer_class = CertificateSerializer
     permission_classes = [IsAdminUser]

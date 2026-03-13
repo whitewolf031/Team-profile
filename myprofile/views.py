@@ -171,3 +171,9 @@ class UserDevBlogtListView(generics.ListAPIView):
     queryset = Blog.objects.all()
     serializer_class = DevBlogSerializer
     permission_classes = [AllowAny]
+
+@extend_schema(tags=['Dev Info'])
+class DevAdminInfoDetailView(generics.RetrieveAPIView):
+    queryset = DevInfo.objects.all()
+    serializer_class = DevInfoDetailSerializer  # ✅ shu serializer yangilandi
+    permission_classes = [AllowAny]
