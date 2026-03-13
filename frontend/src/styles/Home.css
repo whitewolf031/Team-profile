@@ -148,101 +148,126 @@
     font-family: Tahoma;
 }
 
-/* ===== ABOUT CARDS ===== */
-/* .about-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 24px;
-    margin-top: 20px;
-} */
-
-/* .about-card {
-    background: #1f2937;
-    border: 1px solid #374151;
-    border-radius: 12px;
-    padding: 28px 24px;
+/* ===== ABOUT STACK LAYOUT ===== */
+.about-stack {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-    transition: all 0.28s ease;
-} */
-
-.about-card:hover {
-    transform: translateY(-8px);
-    border-color: #60a5fa;
-    box-shadow: 0 12px 32px rgba(96, 165, 250, 0.18);
-}
-
-.about-card-name {
-    color: #60a5fa;
-    font-size: 1.45rem;
-    margin: 0;
-    font-weight: 600;
-}
-
-.about-card-about {
-    color: #d1d5db;
-    font-size: 1rem;
-    line-height: 1.6;
-    flex: 1;
-    margin: 0;
-}
-
-.about-card-info {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 8px;
-}
-
-.about-card-info span {
-    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
-    font-size: 0.95rem;
-    color: #93c5fd;
+    min-height: 560px;      /* kattaroq */
+    margin-top: 40px;
+    margin-bottom: 60px;    /* pastdan joy */
 }
 
-.about-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 24px;
-    margin-top: 20px;
+.about-stack.single {
+    min-height: 480px;
 }
 
+.about-stack.single .about-card-main {
+    transform: rotate(0deg);
+    width: 360px;
+}
+
+/* ===== CARD BASE ===== */
 .about-card {
     background: #1f2937;
     border: 1px solid #374151;
-    border-radius: 12px;
-    padding: 28px 24px;
+    border-radius: 16px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    align-items: center;   /* ✅ markazga */
+    align-items: center;
     gap: 16px;
-    transition: all 0.28s ease;
     text-align: center;
+    transition: all 0.35s ease;
+    position: absolute;
+    cursor: pointer;
 }
 
+/* ── O'rtadagi ASOSIY karta ── */
+.about-card-main {
+    width: 340px;           /* kattaroq */
+    z-index: 10;
+    transform: rotate(0deg);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    border-color: #3b82f6;
+    border-width: 2px;
+}
+
+.about-card-main:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 32px 70px rgba(59, 130, 246, 0.35);
+}
+
+/* ── Chap karta ── */
+.about-card-left {
+    width: 280px;           /* kattaroq */
+    left: calc(50% - 330px); /* asosiydan biroz uzoqroq */
+    transform: rotate(-7deg) translateY(50px);
+    opacity: 0.82;
+    z-index: 5;
+    border-color: #4b5563;
+    box-shadow: -8px 16px 40px rgba(0,0,0,0.5);
+}
+
+.about-card-left:hover {
+    transform: rotate(-3deg) translateY(25px);
+    opacity: 1;
+    box-shadow: -4px 20px 50px rgba(59, 130, 246, 0.2);
+}
+
+/* ── O'ng karta ── */
+.about-card-right {
+    width: 260px;           /* kattaroq */
+    right: calc(50% - 310px);
+    transform: rotate(7deg) translateY(60px);
+    opacity: 0.72;
+    z-index: 4;
+    border-color: #374151;
+    box-shadow: 8px 16px 40px rgba(0,0,0,0.5);
+}
+
+.about-card-right:hover {
+    transform: rotate(3deg) translateY(30px);
+    opacity: 1;
+    box-shadow: 4px 20px 50px rgba(59, 130, 246, 0.15);
+}
+
+/* ===== AVATAR ===== */
 .about-avatar-wrapper {
     width: 100%;
-    height: 220px;
-    border-radius: 12px;        /* ✅ to'rtburchak, ozgina yumaloq burchak */
+    height: 220px;          /* kattaroq */
+    border-radius: 12px;
     overflow: hidden;
     border: 2px solid #3b82f6;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-    transform: rotate(-2deg);   /* ✅ ozgina qiyshaygan */
+    box-shadow: 0 0 24px rgba(59, 130, 246, 0.25);
+    transform: rotate(-2deg);
     transition: transform 0.3s ease;
 }
 
 .about-card:hover .about-avatar-wrapper {
-    transform: rotate(0deg);    /* ✅ hover da to'g'rilanadi */
+    transform: rotate(0deg);
+}
+
+.about-card-main .about-avatar-wrapper {
+    height: 260px;          /* asosiyda yanada kattaroq */
+}
+
+.about-card-left .about-avatar-wrapper {
+    height: 200px;
+    border-color: #4b5563;
+}
+
+.about-card-right .about-avatar-wrapper {
+    height: 185px;
+    border-color: #374151;
 }
 
 .about-avatar {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: rotate(2deg) scale(1.05); /* ✅ rasm ichida qarama-qarshi buriladi */
+    transform: rotate(2deg) scale(1.06);
     transition: transform 0.3s ease;
 }
 
@@ -257,23 +282,38 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: bold;
     color: white;
+}
+
+/* ===== NAME & BTN ===== */
+.about-card-name {
+    color: #60a5fa;
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.about-card-main .about-card-name {
+    font-size: 1.4rem;
+}
+
+.about-card-left .about-card-name {
+    font-size: 1.1rem;
 }
 
 .about-more-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     color: #60a5fa;
     font-weight: 500;
-    font-size: 1rem;
+    font-size: 0.9rem;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
-    margin-top: 4px;
     transition: all 0.2s;
     font-family: Tahoma, sans-serif;
 }

@@ -120,3 +120,18 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+# models.py ga qo'shing
+class Certificate(models.Model):
+    dev = models.ForeignKey(
+        DevInfo,
+        on_delete=models.CASCADE,
+        related_name="certificates"
+    )
+    title = models.CharField(max_length=255)
+    issuer = models.CharField(max_length=255, blank=True, null=True)
+    issued_date = models.DateField(blank=True, null=True)
+    image = models.ImageField(upload_to="certificates/")
+
+    def __str__(self):
+        return f"{self.title} — {self.dev.full_name}"

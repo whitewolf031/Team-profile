@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Blog, DevInfo, Experience, Project
+from .models import Blog, DevInfo, Experience, Project, Certificate
 
 class DevBlogSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(
@@ -46,6 +46,20 @@ class DevProjectSerializer(serializers.ModelSerializer):
 class DevInfoDetailSerializer(serializers.ModelSerializer):
     experiences = DevExperienceSerializer(many=True, read_only=True)
     projects = DevProjectSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = DevInfo
+        fields = '__all__'
+
+class CertificateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Certificate
+        fields = '__all__'
+
+class DevInfoDetailSerializer(serializers.ModelSerializer):
+    experiences  = DevExperienceSerializer(many=True, read_only=True)
+    projects     = DevProjectSerializer(many=True, read_only=True)
+    certificates = CertificateSerializer(many=True, read_only=True)  # ✅
 
     class Meta:
         model = DevInfo
