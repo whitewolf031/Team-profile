@@ -1,10 +1,44 @@
 import { useState, useEffect } from "react";
 import { MdLocationOn, MdEmail, MdPhone } from "react-icons/md";
-import { FaAlignJustify, FaCode, FaInstagram, FaTelegramPlane, FaLinkedin } from "react-icons/fa";
+import { FaAlignJustify, FaCode, FaInstagram, FaTelegramPlane, FaLinkedin, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/Home.css";
 import AboutSection from "./AboutSection";
+
+// Typing effect hook
+function useTyping(words, speed = 100, pause = 1800) {
+    const [text, setText] = useState("");
+    const [wordIdx, setWordIdx] = useState(0);
+    const [charIdx, setCharIdx] = useState(0);
+    const [deleting, setDeleting] = useState(false);
+
+    useEffect(() => {
+        const current = words[wordIdx];
+        const timeout = setTimeout(() => {
+            if (!deleting) {
+                setText(current.slice(0, charIdx + 1));
+                if (charIdx + 1 === current.length) {
+                    setTimeout(() => setDeleting(true), pause);
+                } else {
+                    setCharIdx((c) => c + 1);
+                }
+            } else {
+                setText(current.slice(0, charIdx - 1));
+                if (charIdx - 1 === 0) {
+                    setDeleting(false);
+                    setWordIdx((w) => (w + 1) % words.length);
+                    setCharIdx(0);
+                } else {
+                    setCharIdx((c) => c - 1);
+                }
+            }
+        }, deleting ? speed / 2 : speed);
+        return () => clearTimeout(timeout);
+    }, [charIdx, deleting, wordIdx, words, speed, pause]);
+
+    return text;
+}
 
 function Home() {
     const [formSubmitted, setFormSubmitted] = useState(false);
@@ -13,17 +47,28 @@ function Home() {
     const [profile, setProfile]             = useState(null);
     const [projects, setProjects]           = useState([]);
     const [activeSection, setActiveSection] = useState("home");
+    const [scrolled, setScrolled]           = useState(false);
     const [name, setName]       = useState("");
     const [email, setEmail]     = useState("");
     const [message, setMessage] = useState("");
     const sections = ["home", "about", "projects", "contact"];
     const navigate = useNavigate();
 
+    const typedText = useTyping([
+        "Django & React",
+        "Backend Development",
+        "REST API",
+        "Full-Stack Solutions",
+        "Python Experts",
+        "Cyber security",
+    ]);
+
     useEffect(() => {
         getProfile();
         getProject();
 
         const handleScroll = () => {
+            setScrolled(window.scrollY > 30);
             const scrollPosition = window.scrollY + 100;
             for (const section of sections) {
                 const element = document.getElementById(section);
@@ -65,99 +110,196 @@ function Home() {
             if (res.status === 201 || res.status === 200) {
                 setFormSubmitted(true);
                 setName(""); setEmail(""); setMessage("");
-            } else {
-                alert("Failed to send message. Please try again.");
             }
         } catch (err) {
             console.error(err);
-            alert("Error sending message. Please check your connection.");
+            alert("Error sending message.");
         } finally {
             setLoading(false);
         }
     };
 
     const scrollToSection = (sectionId) => {
-        const element = document.getElementById(sectionId);
-        if (element) element.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+        setIsMenuOpen(false);
     };
 
     return (
         <div className="portfolio-container">
 
-            {/* ===== NAVBAR ===== */}
-            <nav className="navbar">
+            {/* ══════════ NAVBAR ══════════ */}
+            <nav className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
                 <div className="nav-inner">
                     <div className="nav-content">
-                        <div className="logo">
-                            <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection("home"); }}>
-                                CYBERNEX
-                            </a>
+
+                        {/* Logo */}
+                        <div className="logo" onClick={() => scrollToSection("home")}>
+                            <span className="logo-bracket">&lt;</span>
+                            CYBERNEX
+                            <span className="logo-bracket">/&gt;</span>
                         </div>
+
+                        {/* Mobile toggle */}
                         <button className="mobile-menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                            <FaAlignJustify />
+                            {isMenuOpen ? <FaTimes /> : <FaAlignJustify />}
                         </button>
+
+                        {/* Menu */}
                         <div className={`nav-menu ${isMenuOpen ? "mobile-open" : ""}`}>
-                            {sections.map((section) => (
+                            {sections.map((section, i) => (
                                 <button
                                     key={section}
                                     onClick={() => scrollToSection(section)}
                                     className={`nav-button ${activeSection === section ? "nav-active" : ""}`}
+                                    style={{ animationDelay: `${i * 0.08}s` }}
                                 >
+                                    <span className="nav-num">0{i + 1}.</span>
                                     {section.toUpperCase()}
                                 </button>
                             ))}
+                            <a href="https://github.com/cybernexteamuz-prog" target="_blank" rel="noopener noreferrer" className="nav-github-btn">
+                                GitHub
+                            </a>
                         </div>
                     </div>
                 </div>
+
+                {/* Navbar bottom glowing line */}
+                <div className="nav-glow-line" />
             </nav>
 
             <div>
-                {/* ===== HOME ===== */}
+                {/* ══════════ HERO ══════════ */}
                 <section id="home" className="section hero">
+
+                    {/* Overlay */}
+                    <div className="hero-overlay" />
+
+                    {/* Floating particles */}
+                    <div className="hero-particles" aria-hidden="true">
+                        {Array.from({ length: 20 }, (_, i) => (
+                            <div key={i} className="hero-particle" style={{
+                                left:            `${(i * 23 + 5)  % 100}%`,
+                                top:             `${(i * 37 + 10) % 100}%`,
+                                width:           `${(i % 3) + 2}px`,
+                                height:          `${(i % 3) + 2}px`,
+                                animationDelay:  `${(i * 0.4) % 4}s`,
+                                animationDuration:`${3 + (i % 4)}s`,
+                            }} />
+                        ))}
+                    </div>
+
+                    {/* Content */}
                     <div className="hero-content">
-                        <h1 className="hero-title" style={{ fontSize: "70px" }}>
-                            <b>CYBERNEX</b>
+
+                        {/* Badge */}
+                        <div className="hero-badge">
+                            <span className="hero-badge-dot" />
+                            Available for projects
+                        </div>
+
+                        {/* Title */}
+                        <h1 className="hero-title">
+                            <span className="hero-title-line1">CYBER</span>
+                            <span className="hero-title-line2">NEX</span>
                         </h1>
-                        <h2 className="hero-subtitle">Dasturchilar jamoasi</h2>
+
+                        {/* Subtitle */}
+                        <div className="hero-subtitle-wrap">
+                            <span className="hero-subtitle-prefix">// </span>
+                            <span className="hero-typing">{typedText}</span>
+                            <span className="hero-cursor">|</span>
+                        </div>
+
+                        {/* Description */}
                         <p className="hero-description">
-                            Bu texnologiya, kreativlik va jamoaviy kuch birlashgan makon.
+                            Texnologiya, kreativlik va jamoaviy kuch birlashgan makon.
                             Biz innovatsiya, raqamli rivoj va kelajak g'oyalarini birga yaratadigan jamoamiz.
                         </p>
-                        <div className="box-button">
-                            <a href="mailto:cybernexteamuz@gmail.com" className="btn-primary-custom">
-                                <MdEmail className="btn-icon" /> Get In Touch
+
+                        {/* Stats */}
+                        <div className="hero-stats">
+                            <div className="hero-stat">
+                                <span className="hero-stat-num">3+</span>
+                                <span className="hero-stat-lbl">Yil tajriba</span>
+                            </div>
+                            <div className="hero-stat-divider" />
+                            <div className="hero-stat">
+                                <span className="hero-stat-num">20+</span>
+                                <span className="hero-stat-lbl">Loyihalar</span>
+                            </div>
+                            <div className="hero-stat-divider" />
+                            <div className="hero-stat">
+                                <span className="hero-stat-num">5+</span>
+                                <span className="hero-stat-lbl">Dasturchilar</span>
+                            </div>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="hero-buttons">
+                            <a href="mailto:cybernexteamuz@gmail.com" className="btn-hero-primary">
+                                <MdEmail />
+                                Get In Touch
                             </a>
-                            <button onClick={() => scrollToSection("projects")} className="btn-secondary-custom">
-                                <FaCode className="btn-icon" /> View Projects
+                            <button onClick={() => scrollToSection("projects")} className="btn-hero-secondary">
+                                <FaCode />
+                                View Projects
                             </button>
+                        </div>
+
+                        {/* Scroll indicator */}
+                        <div className="hero-scroll">
+                            <div className="hero-scroll-mouse">
+                                <div className="hero-scroll-wheel" />
+                            </div>
+                            <span>Scroll down</span>
                         </div>
                     </div>
                 </section>
 
-                {/* ===== ABOUT ===== */}
+                {/* ══════════ ABOUT ══════════ */}
                 <AboutSection profile={profile} navigate={navigate} />
 
-                {/* ===== PROJECTS ===== */}
-                <section id="projects" className="section">
-                    <div className="section-container">
-                        <h2 style={{ textAlign: "center", marginBottom: "50px", fontSize: "2.5rem" }}>
-                            Projects
-                        </h2>
+            {/* ══════════ PROJECTS ══════════ */}
+                <section id="projects" className="section projects-section">
+
+                    {/* Orqa fon */}
+                    <div className="projects-bg" aria-hidden="true">
+                        <div className="projects-bg-blob projects-bg-blob-1" />
+                        <div className="projects-bg-blob projects-bg-blob-2" />
+                    </div>
+
+                    <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
+
+                        {/* Section header */}
+                        <div className="section-header">
+                            <p className="section-tag">// my work</p>
+                            <h2 className="section-heading">Projects</h2>
+                            <div className="section-heading-line" />
+                        </div>
+
                         {projects.length > 0 ? (
                             <div className="projects-grid">
-                                {projects.map((project) => (
-                                    <div key={project.id} className="project-card">
+                                {projects.map((project, idx) => (
+                                    <div
+                                        key={project.id}
+                                        className="project-card"
+                                        style={{ animationDelay: `${idx * 0.1}s` }}
+                                    >
+                                        {/* Card top accent */}
+                                        <div className="project-card-accent" />
+
                                         <div className="project-content">
-                                            <h3 className="project-title">
-                                                {project.title || "Loyiha nomi kiritilmagan"}
-                                            </h3>
-                                            <p className="project-description">
-                                                {project.description || "Tavsif mavjud emas"}
-                                            </p>
+                                            {/* Number */}
+                                            <span className="project-num">0{idx + 1}</span>
+
+                                            <h3 className="project-title">{project.title || "Loyiha nomi"}</h3>
+                                            <p className="project-description">{project.description || "Tavsif mavjud emas"}</p>
+
                                             {project.technologies?.length > 0 && (
                                                 <div className="project-tags">
-                                                    {project.technologies.map((tech, idx) => (
-                                                        <span key={idx} className="project-tag">{tech.trim()}</span>
+                                                    {project.technologies.map((tech, i) => (
+                                                        <span key={i} className="project-tag">{tech.trim()}</span>
                                                     ))}
                                                 </div>
                                             )}
@@ -166,88 +308,88 @@ function Home() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="empty-projects">
-                                <div className="empty-project-card">
-                                    <div className="empty-icon">🛠️</div>
-                                    <h3>Hozircha loyihalar yuklanmagan...</h3>
-                                    <p>
-                                        Men bir nechta qiziqarli loyihalar ustida ishlayapman.<br />
-                                        Tez orada ular shu yerda paydo bo'ladi!
-                                    </p>
-                                </div>
+                            <div className="projects-empty">
+                                <div className="projects-empty-icon">{"{ }"}</div>
+                                <h3>Hozircha loyihalar yuklanmagan...</h3>
+                                <p>Tez orada ular shu yerda paydo bo'ladi!</p>
                             </div>
                         )}
                     </div>
                 </section>
 
-                {/* ===== CONTACT ===== */}
-                <section id="contact" className="section section-dark">
-                    <div className="section-container contact-grid">
+                {/* ══════════ CONTACT ══════════ */}
+                <section id="contact" className="section contact-section">
 
-                        {/* Chap — ma'lumotlar */}
+                    <div className="contact-bg" aria-hidden="true">
+                        <div className="contact-bg-blob contact-bg-blob-1" />
+                        <div className="contact-bg-blob contact-bg-blob-2" />
+                        {/* Grid lines */}
+                        <div className="contact-grid-lines" />
+                    </div>
+
+                    <div className="section-container contact-wrap">
+
+                        {/* Chap */}
                         <div className="contact-left">
-                            <h2>Ready to collaborate?</h2>
+
+                            <div className="section-header" style={{ textAlign: "left" }}>
+                                <p className="section-tag">// get in touch</p>
+                                <h2 className="section-heading" style={{ textAlign: "left" }}>Ready to<br /><span className="contact-heading-accent">collaborate?</span></h2>
+                                <div className="section-heading-line" style={{ margin: "16px 0 28px" }} />
+                            </div>
+
                             <p className="contact-subtitle">
                                 I'm always interested in discussing new opportunities, innovative projects,
-                                and ways to contribute to meaningful software solutions. Feel free to reach out!
+                                and ways to contribute to meaningful software solutions.
                             </p>
 
-                            <div className="contact-info">
-                                <div className="info-item">
-                                    <MdEmail className="info-icon email" />
+                            {/* Info items */}
+                            <div className="contact-info-list">
+                                <a href="mailto:cybernexteamuz@gmail.com" className="contact-info-item">
+                                    <div className="contact-info-icon email-icon">
+                                        <MdEmail />
+                                    </div>
                                     <div>
-                                        <strong>Email</strong>
-                                        <a href="mailto:cybernexteamuz@gmail.com">cybernexteamuz@gmail.com</a>
+                                        <span className="contact-info-label">Email</span>
+                                        <span className="contact-info-value">cybernexteamuz@gmail.com</span>
+                                    </div>
+                                </a>
+                                <div className="contact-info-item">
+                                    <div className="contact-info-icon phone-icon">
+                                        <MdPhone />
+                                    </div>
+                                    <div>
+                                        <span className="contact-info-label">Phone</span>
+                                        <span className="contact-info-value">+998 (99) 888-08-81</span>
                                     </div>
                                 </div>
-                                <div className="info-item">
-                                    <MdPhone className="info-icon phone" />
-                                    <div>
-                                        <strong>Phone</strong>
-                                        <span style={{ color: "#60a5fa" }}>+998 (99) 888-08-81</span>
+                                <div className="contact-info-item">
+                                    <div className="contact-info-icon loc-icon">
+                                        <MdLocationOn />
                                     </div>
-                                </div>
-                                <div className="info-item">
-                                    <MdLocationOn className="info-icon location" />
                                     <div>
-                                        <strong>Location</strong>
-                                        <span>Tashkent, Uzbekistan</span>
+                                        <span className="contact-info-label">Location</span>
+                                        <span className="contact-info-value">Tashkent, Uzbekistan</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* ✅ Social buttons — to'g'ri JSX */}
-                            <div className="social-connect">
-                                <h4>Connect on Social Media</h4>
-                                <div className="social-buttons">
-
-                                    <a
-                                        href="https://t.me/cybernex_uz"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="social-btn telegram"
-                                    >
-                                        <FaTelegramPlane /> Telegram
+                            {/* Social */}
+                            <div className="contact-social">
+                                <p className="contact-social-label">// connect</p>
+                                <div className="contact-social-btns">
+                                    <a href="https://t.me/cybernex_uz" target="_blank" rel="noopener noreferrer" className="contact-social-btn tg-btn">
+                                        <FaTelegramPlane />
+                                        <span>Telegram</span>
                                     </a>
-
-                                    <a
-                                        href="https://www.instagram.com/cybernex.official?igsh=MXM3NnV2ZGxkajF5Mg=="
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="social-btn instagram"
-                                    >
-                                        <FaInstagram /> Instagram
+                                    <a href="https://www.instagram.com/cybernex.official?igsh=MXM3NnV2ZGxkajF5Mg==" target="_blank" rel="noopener noreferrer" className="contact-social-btn ig-btn">
+                                        <FaInstagram />
+                                        <span>Instagram</span>
                                     </a>
-
-                                    <a
-                                        href="https://www.linkedin.com/in/sardorbek-ergashev-417438330/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="social-btn linkedin"
-                                    >
-                                        <FaLinkedin /> LinkedIn
+                                    <a href="https://www.linkedin.com/in/sardorbek-ergashev-417438330/" target="_blank" rel="noopener noreferrer" className="contact-social-btn li-btn">
+                                        <FaLinkedin />
+                                        <span>LinkedIn</span>
                                     </a>
-
                                 </div>
                             </div>
                         </div>
@@ -255,41 +397,48 @@ function Home() {
                         {/* O'ng — forma */}
                         <div className="contact-right">
                             <div className="contact-form-card">
-                                <h3>Send a Message</h3>
+
+                                <div className="contact-form-header">
+                                    <h3>Send a Message</h3>
+                                    <p>// javob 24 soat ichida</p>
+                                </div>
+
                                 {formSubmitted ? (
-                                    <div className="success-message">
-                                        <div className="success-icon">✓</div>
-                                        <h4>Message Sent Successfully!</h4>
-                                        <p>Thank you! I'll get back to you as soon as possible.</p>
-                                        <button
-                                            className="btn-new-message"
-                                            onClick={() => { setFormSubmitted(false); setName(""); setEmail(""); setMessage(""); }}
-                                        >
-                                            Send Another Message
+                                    <div className="contact-success">
+                                        <div className="contact-success-ring">
+                                            <span>✓</span>
+                                        </div>
+                                        <h4>Xabar yuborildi!</h4>
+                                        <p>Tez orada javob beramiz.</p>
+                                        <button className="contact-success-btn" onClick={() => setFormSubmitted(false)}>
+                                            Yana yuborish
                                         </button>
                                     </div>
                                 ) : (
                                     <form onSubmit={createContact} className="contact-form">
-                                        <div className="form-group">
-                                            <label>Name</label>
-                                            <input type="text" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} required />
+                                        <div className="cf-group">
+                                            <label>Ismingiz</label>
+                                            <input type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
                                         </div>
-                                        <div className="form-group">
+                                        <div className="cf-group">
                                             <label>Email</label>
-                                            <input type="email" placeholder="your.email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                            <input type="email" placeholder="john@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                                         </div>
-                                        <div className="form-group">
-                                            <label>Message</label>
-                                            <textarea placeholder="How can I help you today?" value={message} onChange={(e) => setMessage(e.target.value)} required rows={5} />
+                                        <div className="cf-group">
+                                            <label>Xabar</label>
+                                            <textarea placeholder="Loyiha haqida yozing..." value={message} onChange={(e) => setMessage(e.target.value)} required rows={5} />
                                         </div>
-                                        <button type="submit" className="btn-submit" disabled={loading}>
-                                            {loading ? "Sending..." : "Send Message"}
+                                        <button type="submit" className="cf-submit" disabled={loading}>
+                                            {loading ? (
+                                                <><span className="cf-spinner" /> Yuborilmoqda...</>
+                                            ) : (
+                                                <>Yuborish <span>→</span></>
+                                            )}
                                         </button>
                                     </form>
                                 )}
                             </div>
                         </div>
-
                     </div>
                 </section>
             </div>
