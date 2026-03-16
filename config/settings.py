@@ -148,7 +148,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
+    'TITLE': 'Team-profile',
         'DESCRIPTION': 'Your project description',
     'VERSION': '1.0.0',
 
