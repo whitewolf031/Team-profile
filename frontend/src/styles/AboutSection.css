@@ -218,6 +218,25 @@
   font-weight: 700;
   margin: 0;
 }
+
+/* ── STACK ── */
+.about-card-stack {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #38bdf8;
+  margin: 0;
+  letter-spacing: 0.5px;
+  background: rgba(56,189,248,0.08);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 999px;
+  padding: 3px 12px;
+  display: inline-block;
+}
+
+.about-card-left  .about-card-stack { font-size: 0.72rem; color: #94a3b8; background: rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.15); }
+.about-card-right .about-card-stack { font-size: 0.68rem; color: #64748b; background: rgba(100,116,139,0.06); border-color: rgba(100,116,139,0.12); }
+
 .about-card-main  .about-card-name { font-size: 1.3rem; }
 .about-card-left  .about-card-name { font-size: 1.05rem; }
 .about-card-right .about-card-name { font-size: 0.95rem; color: #93c5fd; }

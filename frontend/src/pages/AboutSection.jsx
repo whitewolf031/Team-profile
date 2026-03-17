@@ -77,7 +77,6 @@ export default function AboutSection({ profile, navigate }) {
             const slotClass = getSlotClass(index);
             const isMain    = slotClass === "about-card-main";
             const isHidden  = slotClass === "about-card-hidden";
-
             if (isHidden) return null;
 
             return (
@@ -96,6 +95,7 @@ export default function AboutSection({ profile, navigate }) {
                   }
                 </div>
                 <h3 className="about-card-name">{person.full_name}</h3>
+                <span className="about-card-stack">{person.stack}</span>
                 {isMain && (
                   <button
                     className="about-more-btn"
