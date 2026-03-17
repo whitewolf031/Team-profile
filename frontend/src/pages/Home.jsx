@@ -258,7 +258,7 @@ function Home() {
                 </section>
 
                 {/* ══════════ ABOUT ══════════ */}
-                <AboutSection profile={profile} navigate={navigate} />
+            <AboutSection profile={profile} navigate={navigate} />
 
             {/* ══════════ PROJECTS ══════════ */}
                 <section id="projects" className="section projects-section">
