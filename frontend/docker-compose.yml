@@ -1,0 +1,9 @@
+frontend:
+    build:
+      context: ./frontend   # frontend papkasi nomi
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - web

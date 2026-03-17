@@ -10,6 +10,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   web:
     build: .
@@ -18,10 +23,13 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+      - media_volume:/app/media
     depends_on:
-      - db
+      db:
+        condition: service_healthy   # ← db tayyor bo'lguncha kutadi
     env_file:
       - .env
 
 volumes:
   postgres_data:
+  media_volume:
