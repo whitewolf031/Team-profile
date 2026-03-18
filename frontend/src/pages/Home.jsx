@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/Home.css";
 import AboutSection from "./AboutSection";
+import { useLang } from "../i18n/useLang";
 
 // Typing effect hook
 function useTyping(words, speed = 100, pause = 1800) {
-    const [text, setText] = useState("");
+    const [text, setText]       = useState("");
     const [wordIdx, setWordIdx] = useState(0);
     const [charIdx, setCharIdx] = useState(0);
     const [deleting, setDeleting] = useState(false);
@@ -41,6 +42,9 @@ function useTyping(words, speed = 100, pause = 1800) {
 }
 
 function Home() {
+    const { lang, changeLang, t } = useLang();
+    const [langOpen, setLangOpen] = useState(false);
+
     const [formSubmitted, setFormSubmitted] = useState(false);
     const [isMenuOpen, setIsMenuOpen]       = useState(false);
     const [loading, setLoading]             = useState(false);
@@ -51,6 +55,7 @@ function Home() {
     const [name, setName]       = useState("");
     const [email, setEmail]     = useState("");
     const [message, setMessage] = useState("");
+
     const sections = ["home", "about", "projects", "contact"];
     const navigate = useNavigate();
 
@@ -66,7 +71,9 @@ function Home() {
     useEffect(() => {
         getProfile();
         getProject();
+    }, [lang]); // lang o'zgarganda qayta fetch
 
+    useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 30);
             const scrollPosition = window.scrollY + 100;
@@ -81,14 +88,23 @@ function Home() {
                 }
             }
         };
-
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        const handleClick = (e) => {
+            if (!e.target.closest(".lang-dropdown-wrap")) {
+                setLangOpen(false);
+            }
+        };
+        document.addEventListener("click", handleClick);
+        return () => document.removeEventListener("click", handleClick);
+    }, []);
+
     const getProfile = async () => {
         try {
-            const res  = await api.get("/api/dev/info/");
+            const res  = await api.get(`/api/dev/info/?lang=${lang}`);
             const data = res.data;
             setProfile(Array.isArray(data) ? data : [data]);
         } catch (err) { console.error(err); }
@@ -96,7 +112,7 @@ function Home() {
 
     const getProject = async () => {
         try {
-            const res  = await api.get("/api/dev/projects/");
+            const res  = await api.get(`/api/dev/projects/?lang=${lang}`);
             const data = res.data;
             setProjects(Array.isArray(data) ? data : data.results ?? []);
         } catch (err) { console.error(err); }
@@ -146,6 +162,8 @@ function Home() {
 
                         {/* Menu */}
                         <div className={`nav-menu ${isMenuOpen ? "mobile-open" : ""}`}>
+
+                            {/* Nav buttons */}
                             {sections.map((section, i) => (
                                 <button
                                     key={section}
@@ -154,17 +172,59 @@ function Home() {
                                     style={{ animationDelay: `${i * 0.08}s` }}
                                 >
                                     <span className="nav-num">0{i + 1}.</span>
-                                    {section.toUpperCase()}
+                                    {t(`nav_${section}`)}
                                 </button>
                             ))}
-                            <a href="https://github.com/cybernexteamuz-prog" target="_blank" rel="noopener noreferrer" className="nav-github-btn">
+
+                            {/* GitHub */}
+                            <a
+                                href="https://github.com/cybernexteamuz-prog"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="nav-github-btn"
+                            >
                                 GitHub
                             </a>
+
+                            {/* Til tanlash */}
+                            <div className="lang-dropdown-wrap">
+                                <button
+                                    className="lang-dropdown-btn"
+                                    onClick={() => setLangOpen(!langOpen)}
+                                >
+                                    <span className="lang-flag">
+                                        {lang === "uz" ? "🇺🇿" : lang === "ru" ? "🇷🇺" : "🇬🇧"}
+                                    </span>
+                                    <span className="lang-current">{lang.toUpperCase()}</span>
+                                    <span className={`lang-arrow ${langOpen ? "open" : ""}`}>▾</span>
+                                </button>
+
+                                {langOpen && (
+                                    <div className="lang-dropdown-menu">
+                                        {[
+                                            { code: "uz", flag: "🇺🇿", label: "O'zbek" },
+                                            { code: "ru", flag: "🇷🇺", label: "Русский" },
+                                            { code: "en", flag: "🇬🇧", label: "English" },
+                                        ].map((l) => (
+                                            <button
+                                                key={l.code}
+                                                className={`lang-dropdown-item ${lang === l.code ? "active" : ""}`}
+                                                onClick={() => {
+                                                    changeLang(l.code);
+                                                    setLangOpen(false);
+                                                }}
+                                            >
+                                                <span>{l.flag}</span>
+                                                <span>{l.label}</span>
+                                                {lang === l.code && <span className="lang-check">✓</span>}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Navbar bottom glowing line */}
                 <div className="nav-glow-line" />
             </nav>
 
@@ -172,98 +232,84 @@ function Home() {
                 {/* ══════════ HERO ══════════ */}
                 <section id="home" className="section hero">
 
-                    {/* Overlay */}
                     <div className="hero-overlay" />
 
-                    {/* Floating particles */}
                     <div className="hero-particles" aria-hidden="true">
                         {Array.from({ length: 20 }, (_, i) => (
                             <div key={i} className="hero-particle" style={{
-                                left:            `${(i * 23 + 5)  % 100}%`,
-                                top:             `${(i * 37 + 10) % 100}%`,
-                                width:           `${(i % 3) + 2}px`,
-                                height:          `${(i % 3) + 2}px`,
-                                animationDelay:  `${(i * 0.4) % 4}s`,
+                                left:             `${(i * 23 + 5)  % 100}%`,
+                                top:              `${(i * 37 + 10) % 100}%`,
+                                width:            `${(i % 3) + 2}px`,
+                                height:           `${(i % 3) + 2}px`,
+                                animationDelay:   `${(i * 0.4) % 4}s`,
                                 animationDuration:`${3 + (i % 4)}s`,
                             }} />
                         ))}
                     </div>
 
-                    {/* Content */}
                     <div className="hero-content">
 
-                        {/* Badge */}
                         <div className="hero-badge">
                             <span className="hero-badge-dot" />
-                            Available for projects
+                            {t("hero_badge")}
                         </div>
 
-                        {/* Title */}
                         <h1 className="hero-title">
                             <span className="hero-title-line1">CYBER</span>
                             <span className="hero-title-line2">NEX</span>
                         </h1>
 
-                        {/* Subtitle */}
                         <div className="hero-subtitle-wrap">
                             <span className="hero-subtitle-prefix">// </span>
                             <span className="hero-typing">{typedText}</span>
                             <span className="hero-cursor">|</span>
                         </div>
 
-                        {/* Description */}
-                        <p className="hero-description">
-                            Texnologiya, kreativlik va jamoaviy kuch birlashgan makon.
-                            Biz innovatsiya, raqamli rivoj va kelajak g'oyalarini birga yaratadigan jamoamiz.
-                        </p>
+                        <p className="hero-description">{t("hero_description")}</p>
 
-                        {/* Stats */}
                         <div className="hero-stats">
                             <div className="hero-stat">
                                 <span className="hero-stat-num">3+</span>
-                                <span className="hero-stat-lbl">Yil tajriba</span>
+                                <span className="hero-stat-lbl">{t("hero_exp")}</span>
                             </div>
                             <div className="hero-stat-divider" />
                             <div className="hero-stat">
                                 <span className="hero-stat-num">20+</span>
-                                <span className="hero-stat-lbl">Loyihalar</span>
+                                <span className="hero-stat-lbl">{t("hero_projects")}</span>
                             </div>
                             <div className="hero-stat-divider" />
                             <div className="hero-stat">
                                 <span className="hero-stat-num">5+</span>
-                                <span className="hero-stat-lbl">Dasturchilar</span>
+                                <span className="hero-stat-lbl">{t("hero_devs")}</span>
                             </div>
                         </div>
 
-                        {/* Buttons */}
                         <div className="hero-buttons">
                             <a href="mailto:cybernexteamuz@gmail.com" className="btn-hero-primary">
                                 <MdEmail />
-                                Get In Touch
+                                {t("hero_get_touch")}
                             </a>
                             <button onClick={() => scrollToSection("projects")} className="btn-hero-secondary">
                                 <FaCode />
-                                View Projects
+                                {t("hero_view_proj")}
                             </button>
                         </div>
 
-                        {/* Scroll indicator */}
                         <div className="hero-scroll">
                             <div className="hero-scroll-mouse">
                                 <div className="hero-scroll-wheel" />
                             </div>
-                            <span>Scroll down</span>
+                            <span>{t("hero_scroll")}</span>
                         </div>
                     </div>
                 </section>
 
                 {/* ══════════ ABOUT ══════════ */}
-            <AboutSection profile={profile} navigate={navigate} />
+                <AboutSection profile={profile} navigate={navigate} t={t} />
 
-            {/* ══════════ PROJECTS ══════════ */}
+                {/* ══════════ PROJECTS ══════════ */}
                 <section id="projects" className="section projects-section">
 
-                    {/* Orqa fon */}
                     <div className="projects-bg" aria-hidden="true">
                         <div className="projects-bg-blob projects-bg-blob-1" />
                         <div className="projects-bg-blob projects-bg-blob-2" />
@@ -271,10 +317,9 @@ function Home() {
 
                     <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
 
-                        {/* Section header */}
                         <div className="section-header">
-                            <p className="section-tag">// my work</p>
-                            <h2 className="section-heading">Projects</h2>
+                            <p className="section-tag">{t("projects_tag")}</p>
+                            <h2 className="section-heading">{t("projects_title")}</h2>
                             <div className="section-heading-line" />
                         </div>
 
@@ -286,16 +331,15 @@ function Home() {
                                         className="project-card"
                                         style={{ animationDelay: `${idx * 0.1}s` }}
                                     >
-                                        {/* Card top accent */}
                                         <div className="project-card-accent" />
-
                                         <div className="project-content">
-                                            {/* Number */}
                                             <span className="project-num">0{idx + 1}</span>
-
-                                            <h3 className="project-title">{project.title || "Loyiha nomi"}</h3>
-                                            <p className="project-description">{project.description || "Tavsif mavjud emas"}</p>
-
+                                            <h3 className="project-title">
+                                                {project.title || t("projects_empty")}
+                                            </h3>
+                                            <p className="project-description">
+                                                {project.description || ""}
+                                            </p>
                                             {project.technologies?.length > 0 && (
                                                 <div className="project-tags">
                                                     {project.technologies.map((tech, i) => (
@@ -310,8 +354,8 @@ function Home() {
                         ) : (
                             <div className="projects-empty">
                                 <div className="projects-empty-icon">{"{ }"}</div>
-                                <h3>Hozircha loyihalar yuklanmagan...</h3>
-                                <p>Tez orada ular shu yerda paydo bo'ladi!</p>
+                                <h3>{t("projects_empty")}</h3>
+                                <p>{t("projects_soon")}</p>
                             </div>
                         )}
                     </div>
@@ -323,7 +367,6 @@ function Home() {
                     <div className="contact-bg" aria-hidden="true">
                         <div className="contact-bg-blob contact-bg-blob-1" />
                         <div className="contact-bg-blob contact-bg-blob-2" />
-                        {/* Grid lines */}
                         <div className="contact-grid-lines" />
                     </div>
 
@@ -331,64 +374,52 @@ function Home() {
 
                         {/* Chap */}
                         <div className="contact-left">
-
                             <div className="section-header" style={{ textAlign: "left" }}>
-                                <p className="section-tag">// get in touch</p>
-                                <h2 className="section-heading" style={{ textAlign: "left" }}>Ready to<br /><span className="contact-heading-accent">collaborate?</span></h2>
+                                <p className="section-tag">{t("contact_tag")}</p>
+                                <h2 className="section-heading" style={{ textAlign: "left" }}>
+                                    {t("contact_title")}<br />
+                                    <span className="contact-heading-accent">{t("contact_title_accent")}</span>
+                                </h2>
                                 <div className="section-heading-line" style={{ margin: "16px 0 28px" }} />
                             </div>
 
-                            <p className="contact-subtitle">
-                                I'm always interested in discussing new opportunities, innovative projects,
-                                and ways to contribute to meaningful software solutions.
-                            </p>
+                            <p className="contact-subtitle">{t("contact_subtitle")}</p>
 
-                            {/* Info items */}
                             <div className="contact-info-list">
                                 <a href="mailto:cybernexteamuz@gmail.com" className="contact-info-item">
-                                    <div className="contact-info-icon email-icon">
-                                        <MdEmail />
-                                    </div>
+                                    <div className="contact-info-icon email-icon"><MdEmail /></div>
                                     <div>
-                                        <span className="contact-info-label">Email</span>
+                                        <span className="contact-info-label">{t("contact_email")}</span>
                                         <span className="contact-info-value">cybernexteamuz@gmail.com</span>
                                     </div>
                                 </a>
                                 <div className="contact-info-item">
-                                    <div className="contact-info-icon phone-icon">
-                                        <MdPhone />
-                                    </div>
+                                    <div className="contact-info-icon phone-icon"><MdPhone /></div>
                                     <div>
-                                        <span className="contact-info-label">Phone</span>
+                                        <span className="contact-info-label">{t("contact_phone")}</span>
                                         <span className="contact-info-value">+998 (99) 888-08-81</span>
                                     </div>
                                 </div>
                                 <div className="contact-info-item">
-                                    <div className="contact-info-icon loc-icon">
-                                        <MdLocationOn />
-                                    </div>
+                                    <div className="contact-info-icon loc-icon"><MdLocationOn /></div>
                                     <div>
-                                        <span className="contact-info-label">Location</span>
+                                        <span className="contact-info-label">{t("contact_location")}</span>
                                         <span className="contact-info-value">Tashkent, Uzbekistan</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Social */}
                             <div className="contact-social">
-                                <p className="contact-social-label">// connect</p>
+                                <p className="contact-social-label">{t("contact_connect")}</p>
                                 <div className="contact-social-btns">
                                     <a href="https://t.me/cybernex_uz" target="_blank" rel="noopener noreferrer" className="contact-social-btn tg-btn">
-                                        <FaTelegramPlane />
-                                        <span>Telegram</span>
+                                        <FaTelegramPlane /><span>Telegram</span>
                                     </a>
                                     <a href="https://www.instagram.com/cybernex.official?igsh=MXM3NnV2ZGxkajF5Mg==" target="_blank" rel="noopener noreferrer" className="contact-social-btn ig-btn">
-                                        <FaInstagram />
-                                        <span>Instagram</span>
+                                        <FaInstagram /><span>Instagram</span>
                                     </a>
                                     <a href="https://www.linkedin.com/in/sardorbek-ergashev-417438330/" target="_blank" rel="noopener noreferrer" className="contact-social-btn li-btn">
-                                        <FaLinkedin />
-                                        <span>LinkedIn</span>
+                                        <FaLinkedin /><span>LinkedIn</span>
                                     </a>
                                 </div>
                             </div>
@@ -399,40 +430,56 @@ function Home() {
                             <div className="contact-form-card">
 
                                 <div className="contact-form-header">
-                                    <h3>Send a Message</h3>
-                                    <p>// javob 24 soat ichida</p>
+                                    <h3>{t("contact_send")}</h3>
+                                    <p>{t("contact_reply")}</p>
                                 </div>
 
                                 {formSubmitted ? (
                                     <div className="contact-success">
-                                        <div className="contact-success-ring">
-                                            <span>✓</span>
-                                        </div>
-                                        <h4>Xabar yuborildi!</h4>
-                                        <p>Tez orada javob beramiz.</p>
+                                        <div className="contact-success-ring"><span>✓</span></div>
+                                        <h4>{t("contact_success_title")}</h4>
+                                        <p>{t("contact_success_text")}</p>
                                         <button className="contact-success-btn" onClick={() => setFormSubmitted(false)}>
-                                            Yana yuborish
+                                            {t("contact_send_another")}
                                         </button>
                                     </div>
                                 ) : (
                                     <form onSubmit={createContact} className="contact-form">
                                         <div className="cf-group">
-                                            <label>Ismingiz</label>
-                                            <input type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
+                                            <label>{t("contact_name_label")}</label>
+                                            <input
+                                                type="text"
+                                                placeholder={t("contact_name_ph")}
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                required
+                                            />
                                         </div>
                                         <div className="cf-group">
-                                            <label>Email</label>
-                                            <input type="email" placeholder="john@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                            <label>{t("contact_email_label")}</label>
+                                            <input
+                                                type="email"
+                                                placeholder={t("contact_email_ph")}
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required
+                                            />
                                         </div>
                                         <div className="cf-group">
-                                            <label>Xabar</label>
-                                            <textarea placeholder="Loyiha haqida yozing..." value={message} onChange={(e) => setMessage(e.target.value)} required rows={5} />
+                                            <label>{t("contact_msg_label")}</label>
+                                            <textarea
+                                                placeholder={t("contact_msg_ph")}
+                                                value={message}
+                                                onChange={(e) => setMessage(e.target.value)}
+                                                required
+                                                rows={5}
+                                            />
                                         </div>
                                         <button type="submit" className="cf-submit" disabled={loading}>
                                             {loading ? (
-                                                <><span className="cf-spinner" /> Yuborilmoqda...</>
+                                                <><span className="cf-spinner" /> {t("contact_sending")}</>
                                             ) : (
-                                                <>Yuborish <span>→</span></>
+                                                <>{t("contact_submit")} <span>→</span></>
                                             )}
                                         </button>
                                     </form>

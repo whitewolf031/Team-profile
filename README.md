@@ -20,3 +20,7 @@ docker-compose logs -f web
 3. web container ishga tushadi
 4. entrypoint.sh → migrate → superuser → gunicorn
 5. frontend container ishga tushadi → nginx
+
+
+docker-compose down
+docker-compose up -d --build

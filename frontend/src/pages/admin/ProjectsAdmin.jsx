@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import api from "../../api";
+import LangTabs from "../../components/LangTabs";
 
 const TECH_CHOICES = [
-  { value: "python",            label: "Python" },
-  { value: "php",               label: "PHP" },
-  { value: "javaScript",        label: "JavaScript" },
-  { value: "pyTelegramBotApi",  label: "pyTelegramBotApi" },
-  { value: "laravel",           label: "Laravel" },
-  { value: "django",            label: "Django" },
-  { value: "react",             label: "React" },
-  { value: "docker",            label: "Docker" },
-  { value: "PosgreSQl",         label: "PostgreSQL" },
-  { value: "MySQL",             label: "MySQL" },
-  { value: "SQLite",            label: "SQLite" },
+  { value: "python",           label: "Python" },
+  { value: "php",              label: "PHP" },
+  { value: "javaScript",       label: "JavaScript" },
+  { value: "pyTelegramBotApi", label: "pyTelegramBotApi" },
+  { value: "laravel",          label: "Laravel" },
+  { value: "django",           label: "Django" },
+  { value: "react",            label: "React" },
+  { value: "docker",           label: "Docker" },
+  { value: "PosgreSQl",        label: "PostgreSQL" },
+  { value: "MySQL",            label: "MySQL" },
+  { value: "SQLite",           label: "SQLite" },
 ];
 
 const Icon = ({ name }) => {
@@ -24,11 +25,7 @@ const Icon = ({ name }) => {
     check: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z",
     link:  "M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z",
   };
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d={icons[name]} />
-    </svg>
-  );
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d={icons[name]} /></svg>;
 };
 
 const css = `
@@ -48,6 +45,7 @@ const css = `
   .pr-tag-blue { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); color: #38bdf8; }
   .pr-card-link { color: #818cf8; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; text-decoration: none; display: flex; align-items: center; gap: 4px; width: fit-content; }
   .pr-card-link:hover { color: #a5b4fc; text-decoration: underline; }
+  .pr-dev-badge { font-size: 0.68rem; padding: 2px 8px; border-radius: 6px; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: #34d399; font-family: 'JetBrains Mono', monospace; display: inline-block; }
   .pr-actions { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 6px; }
   .pr-btn-icon { background: #1a2235; border: 1px solid #1e2d45; color: #64748b; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
   .pr-btn-icon:hover { color: #38bdf8; border-color: #38bdf8; background: rgba(56,189,248,0.08); }
@@ -57,15 +55,16 @@ const css = `
   .pr-modal { background: #111827; border: 1px solid #1e2d45; border-radius: 16px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
   .pr-modal-head { padding: 1.2rem 1.5rem; border-bottom: 1px solid #1e2d45; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: #111827; z-index: 1; }
   .pr-modal-title { font-size: 1rem; font-weight: 700; }
-  .pr-modal-close { background: none; border: none; color: #64748b; cursor: pointer; display: flex; transition: color 0.2s; }
+  .pr-modal-close { background: none; border: none; color: #64748b; cursor: pointer; display: flex; }
   .pr-modal-close:hover { color: #e2e8f0; }
   .pr-modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
   .pr-modal-foot { padding: 1rem 1.5rem; border-top: 1px solid #1e2d45; display: flex; gap: 0.75rem; justify-content: flex-end; }
   .pr-field { display: flex; flex-direction: column; gap: 6px; }
   .pr-label { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #64748b; letter-spacing: 0.5px; }
-  .pr-input, .pr-textarea { background: #1a2235; border: 1px solid #1e2d45; color: #e2e8f0; padding: 10px 14px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.9rem; transition: border-color 0.2s; width: 100%; }
-  .pr-input:focus, .pr-textarea:focus { outline: none; border-color: #38bdf8; }
+  .pr-input, .pr-textarea, .pr-select { background: #1a2235; border: 1px solid #1e2d45; color: #e2e8f0; padding: 10px 14px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 0.9rem; transition: border-color 0.2s; width: 100%; box-sizing: border-box; }
+  .pr-input:focus, .pr-textarea:focus, .pr-select:focus { outline: none; border-color: #38bdf8; }
   .pr-textarea { resize: vertical; min-height: 100px; }
+  .pr-select option { background: #1a2235; }
   .pr-tech-choices { display: flex; flex-wrap: wrap; gap: 6px; }
   .pr-tech-choice { background: #1a2235; border: 1px solid #1e2d45; color: #64748b; padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; transition: all 0.2s; }
   .pr-tech-choice:hover { border-color: #38bdf8; color: #38bdf8; }
@@ -78,33 +77,44 @@ const css = `
   .pr-btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 `;
 
-const EMPTY_FORM = { title: "", description: "", project_url: "", technologies: [] };
+const EMPTY_FORM = {
+  dev: "",
+  title_uz: "", title_ru: "", title_en: "",
+  description_uz: "", description_ru: "", description_en: "",
+  project_url: "", technologies: [],
+};
 
 export default function ProjectAdmin() {
-  const [data, setData]       = useState([]);
-  const [modal, setModal]     = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [saving, setSaving]   = useState(false);
-  const [form, setForm]       = useState(EMPTY_FORM);
+  const [data, setData]         = useState([]);
+  const [devList, setDevList]   = useState([]);
+  const [modal, setModal]       = useState(false);
+  const [editing, setEditing]   = useState(null);
+  const [saving, setSaving]     = useState(false);
+  const [form, setForm]         = useState(EMPTY_FORM);
+  const [formLang, setFormLang] = useState("uz");
 
-  const load = () =>
-    api.get("/api/admin-control/projects/")
-      .then((res) => setData(Array.isArray(res.data) ? res.data : []))
-      .catch(console.error);
+  const load     = () => api.get("/api/admin-control/projects/").then((r) => setData(Array.isArray(r.data) ? r.data : [])).catch(console.error);
+  const loadDevs = () => api.get("/api/admin-control/dev/").then((r) => setDevList(Array.isArray(r.data) ? r.data : [])).catch(console.error);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); loadDevs(); }, []);
 
   const open = (item = null) => {
+    setFormLang("uz");
     if (item) {
       setForm({
-        title:        item.title        || "",
-        description:  item.description  || "",
-        project_url:  item.project_url  || "",
-        technologies: item.technologies || [],
+        dev:            item.dev            || "",
+        title_uz:       item.title_uz       || "",
+        title_ru:       item.title_ru       || "",
+        title_en:       item.title_en       || "",
+        description_uz: item.description_uz || "",
+        description_ru: item.description_ru || "",
+        description_en: item.description_en || "",
+        project_url:    item.project_url    || "",
+        technologies:   item.technologies   || [],
       });
       setEditing(item.id);
     } else {
-      setForm(EMPTY_FORM);
+      setForm({ ...EMPTY_FORM, dev: devList.length === 1 ? devList[0].id : "" });
       setEditing(null);
     }
     setModal(true);
@@ -112,10 +122,8 @@ export default function ProjectAdmin() {
 
   const close = () => { setModal(false); setEditing(null); };
 
-  // ✅ Toggle texnologiya tanlash
   const toggleTech = (value) => {
-    const selected = form.technologies.includes(value);
-    const updated  = selected
+    const updated = form.technologies.includes(value)
       ? form.technologies.filter((t) => t !== value)
       : [...form.technologies, value];
     setForm({ ...form, technologies: updated });
@@ -125,17 +133,20 @@ export default function ProjectAdmin() {
     setSaving(true);
     try {
       const payload = {
-        title:        form.title,
-        description:  form.description,
-        project_url:  form.project_url || null,
-        technologies: form.technologies, // ✅ array to'g'ridan-to'g'ri
+        dev:            form.dev ? Number(form.dev) : null,
+        title_uz:       form.title_uz,
+        title_ru:       form.title_ru,
+        title_en:       form.title_en,
+        description_uz: form.description_uz,
+        description_ru: form.description_ru,
+        description_en: form.description_en,
+        project_url:    form.project_url || null,
+        technologies:   form.technologies,
       };
       if (editing) await api.put(`/api/admin-control/projects/${editing}/`, payload);
       else         await api.post("/api/admin-control/projects/", payload);
       close(); load();
-    } catch (e) {
-      console.error("Xato:", e.response?.data);
-    }
+    } catch (e) { console.error(e.response?.data); }
     setSaving(false);
   };
 
@@ -146,24 +157,17 @@ export default function ProjectAdmin() {
   };
 
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const devName = (id) => devList.find((d) => d.id === id)?.full_name || `Dev #${id}`;
 
   return (
     <>
       <style>{css}</style>
       <div className="pr-wrap">
-
-        {/* TOP BAR */}
         <div className="pr-topbar">
-          <div>
-            <div className="pr-title">Projects</div>
-            <div className="pr-sub">// loyihalar</div>
-          </div>
-          <button className="pr-btn-primary" onClick={() => open()}>
-            <Icon name="plus" /> Yangi qo'shish
-          </button>
+          <div><div className="pr-title">Projects</div><div className="pr-sub">// loyihalar</div></div>
+          <button className="pr-btn-primary" onClick={() => open()}><Icon name="plus" /> Yangi qo'shish</button>
         </div>
 
-        {/* CARDS GRID */}
         {data.length === 0 && <div className="pr-empty">// ma'lumot topilmadi</div>}
 
         <div className="pr-grid">
@@ -173,13 +177,14 @@ export default function ProjectAdmin() {
                 <button className="pr-btn-icon" onClick={() => open(item)}><Icon name="edit" /></button>
                 <button className="pr-btn-icon danger" onClick={() => del(item.id)}><Icon name="trash" /></button>
               </div>
-              <div className="pr-card-name">{item.title}</div>
-              {item.description && <div className="pr-card-desc">{item.description}</div>}
+              <div className="pr-card-name">{item.title_uz}</div>
+              {item.dev && <span className="pr-dev-badge">👤 {devName(item.dev)}</span>}
+              {item.description_uz && <div className="pr-card-desc">{item.description_uz}</div>}
               {item.technologies?.length > 0 && (
                 <div className="pr-tags">
                   {item.technologies.map((t, i) => (
                     <span key={i} className="pr-tag pr-tag-blue">
-                      {TECH_CHOICES.find(c => c.value === t)?.label || t}
+                      {TECH_CHOICES.find((c) => c.value === t)?.label || t}
                     </span>
                   ))}
                 </div>
@@ -193,7 +198,6 @@ export default function ProjectAdmin() {
           ))}
         </div>
 
-        {/* MODAL */}
         {modal && (
           <div className="pr-overlay" onClick={(e) => e.target === e.currentTarget && close()}>
             <div className="pr-modal">
@@ -201,26 +205,41 @@ export default function ProjectAdmin() {
                 <span className="pr-modal-title">{editing ? "Loyihani tahrirlash" : "Yangi loyiha"}</span>
                 <button className="pr-modal-close" onClick={close}><Icon name="close" /></button>
               </div>
-
               <div className="pr-modal-body">
+
+                {/* DEV */}
                 <div className="pr-field">
-                  <label className="pr-label">LOYIHA NOMI *</label>
-                  <input className="pr-input" placeholder="Portfolio Website" value={form.title} onChange={f("title")} />
+                  <label className="pr-label">DEV (kimga bog'lash)</label>
+                  <select className="pr-select" value={form.dev} onChange={f("dev")}>
+                    <option value="">— Tanlang —</option>
+                    {devList.map((d) => <option key={d.id} value={d.id}>{d.full_name}</option>)}
+                  </select>
                 </div>
 
+                <LangTabs lang={formLang} setLang={setFormLang} />
+
+                {/* NOMI */}
                 <div className="pr-field">
-                  <label className="pr-label">TAVSIF *</label>
-                  <textarea className="pr-textarea" placeholder="Bu loyiha haqida qisqacha..." value={form.description} onChange={f("description")} />
+                  <label className="pr-label">LOYIHA NOMI * ({formLang.toUpperCase()})</label>
+                  {formLang === "uz" && <input className="pr-input" placeholder="Portfolio Website" value={form.title_uz} onChange={f("title_uz")} />}
+                  {formLang === "ru" && <input className="pr-input" placeholder="Портфолио сайт"    value={form.title_ru} onChange={f("title_ru")} />}
+                  {formLang === "en" && <input className="pr-input" placeholder="Portfolio Website" value={form.title_en} onChange={f("title_en")} />}
                 </div>
 
-                {/* ✅ Toggle buttons */}
+                {/* TAVSIF */}
+                <div className="pr-field">
+                  <label className="pr-label">TAVSIF ({formLang.toUpperCase()})</label>
+                  {formLang === "uz" && <textarea className="pr-textarea" placeholder="Bu loyiha haqida..." value={form.description_uz} onChange={f("description_uz")} />}
+                  {formLang === "ru" && <textarea className="pr-textarea" placeholder="Об этом проекте..."  value={form.description_ru} onChange={f("description_ru")} />}
+                  {formLang === "en" && <textarea className="pr-textarea" placeholder="About this project..." value={form.description_en} onChange={f("description_en")} />}
+                </div>
+
+                {/* TEXNOLOGIYALAR */}
                 <div className="pr-field">
                   <label className="pr-label">TEXNOLOGIYALAR</label>
                   <div className="pr-tech-choices">
                     {TECH_CHOICES.map((tech) => (
-                      <button
-                        key={tech.value}
-                        type="button"
+                      <button key={tech.value} type="button"
                         className={`pr-tech-choice ${form.technologies.includes(tech.value) ? "selected" : ""}`}
                         onClick={() => toggleTech(tech.value)}
                       >
@@ -231,14 +250,13 @@ export default function ProjectAdmin() {
                   {form.technologies.length > 0 && (
                     <div className="pr-tech-preview">
                       {form.technologies.map((t, i) => (
-                        <span key={i} className="pr-tag pr-tag-blue">
-                          {TECH_CHOICES.find(c => c.value === t)?.label || t}
-                        </span>
+                        <span key={i} className="pr-tag pr-tag-blue">{TECH_CHOICES.find((c) => c.value === t)?.label || t}</span>
                       ))}
                     </div>
                   )}
                 </div>
 
+                {/* URL */}
                 <div className="pr-field">
                   <label className="pr-label">LOYIHA HAVOLASI</label>
                   <input className="pr-input" placeholder="https://github.com/username/repo" value={form.project_url} onChange={f("project_url")} />
@@ -247,7 +265,7 @@ export default function ProjectAdmin() {
 
               <div className="pr-modal-foot">
                 <button className="pr-btn-cancel" onClick={close}>Bekor qilish</button>
-                <button className="pr-btn-save" onClick={save} disabled={saving || !form.title}>
+                <button className="pr-btn-save" onClick={save} disabled={saving || !form.title_uz}>
                   <Icon name="check" /> {saving ? "Saqlanmoqda..." : "Saqlash"}
                 </button>
               </div>

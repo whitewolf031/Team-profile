@@ -3,26 +3,30 @@ import { useParams, useNavigate } from "react-router-dom";
 import { MdLocationOn, MdEmail, MdPhone, MdArrowBack, MdClose, MdZoomIn } from "react-icons/md";
 import api from "../api";
 import "../styles/Profile.css";
+import { useLang } from "../i18n/useLang";
 
 function ProfileDetail() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [person, setPerson] = useState(null);
+    const { id }       = useParams();
+    const navigate     = useNavigate();
+    const { lang, changeLang, t } = useLang();
+
+    const [person,  setPerson]  = useState(null);
     const [lightbox, setLightbox] = useState(null);
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const [name,    setName]    = useState("");
+    const [email,   setEmail]   = useState("");
     const [message, setMessage] = useState("");
     const [sending, setSending] = useState(false);
-    const [sent, setSent] = useState(false);
+    const [sent,    setSent]    = useState(false);
 
-    const achievementColors = ['#2563eb', '#16a34a', '#f97316'];
+    const achievementColors    = ['#2563eb', '#16a34a', '#f97316'];
     const responsibilityColors = ['#a855f7', '#ef4444', '#eab308'];
 
+    // lang o'zgarganda qayta fetch
     useEffect(() => {
-        api.get(`/api/dev/info/${id}/`)
+        api.get(`/api/dev/info/${id}/?lang=${lang}`)
             .then(res => setPerson(res.data))
             .catch(console.error);
-    }, [id]);
+    }, [id, lang]);
 
     useEffect(() => {
         const handler = (e) => { if (e.key === "Escape") setLightbox(null); };
@@ -47,13 +51,31 @@ function ProfileDetail() {
 
     if (!person) return (
         <div className="detail-loading">
-            <div className="loading-spinner"></div>
+            <div className="loading-spinner" />
             <p>Loading...</p>
         </div>
     );
 
     return (
         <div className="detail-container">
+
+            {/* ===== LANG SWITCHER ===== */}
+            <div className="profile-lang-bar">
+                <button className="profile-back-btn" onClick={() => navigate(-1)}>
+                    <MdArrowBack /> {t("back") || "Back"}
+                </button>
+                <div className="lang-switcher">
+                    {["uz", "ru", "en"].map((l) => (
+                        <button
+                            key={l}
+                            className={`lang-btn ${lang === l ? "lang-active" : ""}`}
+                            onClick={() => changeLang(l)}
+                        >
+                            {l.toUpperCase()}
+                        </button>
+                    ))}
+                </div>
+            </div>
 
             {/* ===== HERO ===== */}
             <div className="detail-hero">
@@ -87,11 +109,11 @@ function ProfileDetail() {
                     <div className="detail-stats">
                         <div className="stat-box">
                             <span className="stat-value" style={{ color: "#3b82f6" }}>{person.experience}+</span>
-                            <span className="stat-label">Years Exp.</span>
+                            <span className="stat-label">{t("hero_exp")}</span>
                         </div>
                         <div className="stat-box">
                             <span className="stat-value" style={{ color: "#4ade80" }}>{person.projects?.length || 0}</span>
-                            <span className="stat-label">Projects</span>
+                            <span className="stat-label">{t("hero_projects")}</span>
                         </div>
                         <div className="stat-box">
                             <span className="stat-value" style={{ color: "#fbbf24" }}>{person.certificates?.length || 0}</span>
@@ -156,7 +178,7 @@ function ProfileDetail() {
             {/* ===== PROJECTS ===== */}
             {person.projects?.length > 0 && (
                 <div className="detail-section-full">
-                    <h2 className="detail-section-title">Projects</h2>
+                    <h2 className="detail-section-title">{t("projects_title")}</h2>
                     <div className="detail-projects-grid">
                         {person.projects.map((project) => (
                             <div key={project.id} className="detail-project-card">
@@ -186,11 +208,7 @@ function ProfileDetail() {
                     <h2 className="detail-section-title">Certificates</h2>
                     <div className="cert-grid">
                         {person.certificates.map((cert) => (
-                            <div
-                                key={cert.id}
-                                className="cert-card"
-                                onClick={() => setLightbox(cert)}
-                            >
+                            <div key={cert.id} className="cert-card" onClick={() => setLightbox(cert)}>
                                 <div className="cert-img-wrap">
                                     <img src={cert.image} alt={cert.title} className="cert-img" />
                                     <div className="cert-overlay">
@@ -199,7 +217,7 @@ function ProfileDetail() {
                                 </div>
                                 <div className="cert-info">
                                     <p className="cert-title">{cert.title}</p>
-                                    {cert.issuer && <p className="cert-issuer">{cert.issuer}</p>}
+                                    {cert.issuer      && <p className="cert-issuer">{cert.issuer}</p>}
                                     {cert.issued_date && <p className="cert-date">{cert.issued_date}</p>}
                                 </div>
                             </div>
@@ -208,46 +226,64 @@ function ProfileDetail() {
                 </div>
             )}
 
-            {/* ===== BACK ===== */}
-            <div className="detail-back-bottom">
-                <button className="btn-back-bottom" onClick={() => navigate(-1)}>
-                    <MdArrowBack /> Back
-                </button>
-            </div>
-
-            {/* ===== CONTACT ===== */}
+            {/* ===== CONTACT FORM ===== */}
             <div className="detail-section-full">
-                <h2 className="detail-section-title">Send a Message</h2>
+                <h2 className="detail-section-title">{t("contact_send")}</h2>
                 <div className="detail-contact-card">
                     {sent ? (
                         <div className="detail-success">
                             <div className="detail-success-icon">✓</div>
-                            <h4>Xabar yuborildi!</h4>
-                            <p>{person.full_name} tez orada javob beradi.</p>
+                            <h4>{t("contact_success_title")}</h4>
+                            <p>{person.full_name} {t("contact_success_text")}</p>
                             <button onClick={() => setSent(false)} className="btn-back-bottom" style={{ marginTop: "16px" }}>
-                                Yana yuborish
+                                {t("contact_send_another")}
                             </button>
                         </div>
                     ) : (
                         <form onSubmit={sendMessage} className="detail-contact-form">
                             <div className="detail-form-group">
-                                <label>Name</label>
-                                <input type="text" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} required />
+                                <label>{t("contact_name_label")}</label>
+                                <input
+                                    type="text"
+                                    placeholder={t("contact_name_ph")}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
                             </div>
                             <div className="detail-form-group">
-                                <label>Email</label>
-                                <input type="email" placeholder="your.email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                <label>{t("contact_email_label")}</label>
+                                <input
+                                    type="email"
+                                    placeholder={t("contact_email_ph")}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
                             </div>
                             <div className="detail-form-group">
-                                <label>Message</label>
-                                <textarea placeholder="How can I help you today?" value={message} onChange={(e) => setMessage(e.target.value)} required rows={5} />
+                                <label>{t("contact_msg_label")}</label>
+                                <textarea
+                                    placeholder={t("contact_msg_ph")}
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    required
+                                    rows={5}
+                                />
                             </div>
                             <button type="submit" className="detail-submit-btn" disabled={sending}>
-                                {sending ? "Sending..." : "Send Message"}
+                                {sending ? t("contact_sending") : t("contact_submit")}
                             </button>
                         </form>
                     )}
                 </div>
+            </div>
+
+            {/* ===== BACK BUTTON ===== */}
+            <div className="detail-back-bottom">
+                <button className="btn-back-bottom" onClick={() => navigate(-1)}>
+                    <MdArrowBack /> {t("back") || "Back"}
+                </button>
             </div>
 
             {/* ===== LIGHTBOX ===== */}
@@ -260,13 +296,12 @@ function ProfileDetail() {
                         <img src={lightbox.image} alt={lightbox.title} className="lightbox-img" />
                         <div className="lightbox-meta">
                             <p className="lightbox-title">{lightbox.title}</p>
-                            {lightbox.issuer && <p className="lightbox-issuer">{lightbox.issuer}</p>}
+                            {lightbox.issuer      && <p className="lightbox-issuer">{lightbox.issuer}</p>}
                             {lightbox.issued_date && <p className="lightbox-date">{lightbox.issued_date}</p>}
                         </div>
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

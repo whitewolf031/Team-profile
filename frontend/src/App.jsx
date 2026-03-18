@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import ProfileDetail from "./pages/Profile";
 import Login from "./pages/Login";
@@ -11,13 +11,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/profile/:id" element={<ProfileDetail />} />
         <Route path="/login" element={<Login />} />
-
-        {/* Admin Panel Layout */}
         <Route
           path="/admin/*"
           element={
@@ -26,10 +22,8 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route path="/logout" element={<Logout />} />
         <Route path="*" element={<NotFound />} />
-
       </Routes>
     </BrowserRouter>
   );
