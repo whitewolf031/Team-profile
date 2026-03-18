@@ -4,7 +4,8 @@ from rest_framework.permissions import AllowAny
 from myprofile.models import UsersInfo
 from myprofile.serializers import ContactSerializer
 from admin_control.models import (DevInfo, Experience, Project, Blog)
-from admin_control.serializers import (DevInfoAdminSerializer, DevExperienceSerializer, DevProjectSerializer, DevBlogSerializer, DevInfoDetailSerializer)
+from .serializers import (DevInfoSerializer, DevExperienceSerializer, DevProjectSerializer, DevBlogSerializer)
+from admin_control.serializers import DevInfoDetailSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from config.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_TOPIC_ID, TELEGRAM_GROUP_ID
@@ -19,6 +20,12 @@ LANG_PARAMETER = OpenApiParameter(
     default='uz',
     required=False,
 )
+
+class LangContextMixin:
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request   # serializer _get_lang() dan o'qiydi
+        return context
 
 def send_telegram_message(text: str, parse_mode: str = "HTML") -> bool:
     if not TELEGRAM_BOT_TOKEN:
@@ -154,18 +161,9 @@ class ContactCreateView(generics.CreateAPIView):
         )
     
 @extend_schema(tags=['Dev Info'], parameters=[LANG_PARAMETER])
-class UserDevInfoListView(generics.ListAPIView):
+class UserDevInfoListView(LangContextMixin, generics.ListAPIView):
     queryset = DevInfo.objects.all()
-    serializer_class = DevInfoAdminSerializer
-    permission_classes = [AllowAny]
-
-    def get_serializer_context(self):
-        return {'request': self.request}
-
-@extend_schema(tags=['Dev Info'])
-class DevAdminInfoDetailView(generics.RetrieveAPIView):
-    queryset = DevInfo.objects.all()
-    serializer_class = DevInfoDetailSerializer
+    serializer_class = DevInfoSerializer
     permission_classes = [AllowAny]
 
 @extend_schema(tags=['Dev Experienct'])
@@ -184,10 +182,4 @@ class UserDevProjectListView(generics.ListAPIView):
 class UserDevBlogtListView(generics.ListAPIView):
     queryset = Blog.objects.all()
     serializer_class = DevBlogSerializer
-    permission_classes = [AllowAny]
-
-@extend_schema(tags=['Dev Info'])
-class DevAdminInfoDetailView(generics.RetrieveAPIView):
-    queryset = DevInfo.objects.all()
-    serializer_class = DevInfoDetailSerializer  # ✅ shu serializer yangilandi
     permission_classes = [AllowAny]

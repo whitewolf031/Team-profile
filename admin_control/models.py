@@ -1,10 +1,15 @@
 from django.db import models
 from django.conf import settings
 
-
 class DevInfo(models.Model):
-    full_name = models.CharField(max_length=255)
-    stack = models.CharField(max_length=255)
+    full_name_uz = models.CharField(max_length=255)
+    full_name_ru = models.CharField(max_length=255)
+    full_name_en = models.CharField(max_length=255)
+
+    stack_uz = models.CharField(max_length=255)
+    stack_ru = models.CharField(max_length=255)
+    stack_en = models.CharField(max_length=255)
+
     experience = models.IntegerField()
 
     # About — 3 tilda
@@ -13,6 +18,7 @@ class DevInfo(models.Model):
     about_en = models.TextField(blank=True, null=True)
 
     email = models.EmailField(max_length=255)
+
     phone = models.CharField(max_length=50)
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
     telegram_chat_id = models.CharField(max_length=50, blank=True, null=True)
@@ -28,7 +34,6 @@ class DevInfo(models.Model):
 
     def __str__(self):
         return self.full_name
-
 
 class UsersInfo(models.Model):
     dev = models.ForeignKey(

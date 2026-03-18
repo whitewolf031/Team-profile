@@ -1,6 +1,6 @@
 from .models import Blog, DevInfo, Experience, Project, Certificate
-from .serializers import (DevBlogSerializer, DevInfoAdminSerializer, DevExperienceSerializer,
-                          DevProjectSerializer, CertificateSerializer)
+from .serializers import (DevBlogAdminSerializer, DevInfoAdminSerializer, DevExperienceAdminSerializer,
+                          DevProjectAdminSerializer, CertificateAdminSerializer)
 from rest_framework.permissions import IsAdminUser
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -32,7 +32,7 @@ class LangMixin:
 @extend_schema(tags=['Admin Blog Control'], parameters=[LANG_PARAMETER])
 class DevBlogControl(LangMixin, viewsets.ModelViewSet):
     queryset = Blog.objects.all()
-    serializer_class = DevBlogSerializer
+    serializer_class = DevBlogAdminSerializer
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -54,20 +54,20 @@ class DevAdminInfoControl(LangMixin, viewsets.ModelViewSet):
 @extend_schema(tags=['Admin Experience Control'], parameters=[LANG_PARAMETER])
 class DevAdminExperienceControl(LangMixin, viewsets.ModelViewSet):
     queryset = Experience.objects.all()
-    serializer_class = DevExperienceSerializer
+    serializer_class = DevExperienceAdminSerializer
     permission_classes = [IsAdminUser]
 
 
 @extend_schema(tags=['Admin Project Control'], parameters=[LANG_PARAMETER])
 class DevAdminProjectControl(LangMixin, viewsets.ModelViewSet):
     queryset = Project.objects.all()
-    serializer_class = DevProjectSerializer
+    serializer_class = DevProjectAdminSerializer
     permission_classes = [IsAdminUser]
 
 
 @extend_schema(tags=['Admin Certificate Control'], parameters=[LANG_PARAMETER])
 class DevAdminCertificateControl(LangMixin, viewsets.ModelViewSet):
     queryset = Certificate.objects.all()
-    serializer_class = CertificateSerializer
+    serializer_class = CertificateAdminSerializer
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]

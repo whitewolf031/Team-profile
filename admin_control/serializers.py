@@ -8,9 +8,13 @@ class DevInfoAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = DevInfo
         fields = [
-            'id', 'full_name', 'stack', 'experience',
+            'id', 
+            'full_name_uz', 'full_name_ru', 'full_name_en', 
+            'stack_uz', 'stack_ru', 'stack_en', 
+            'experience',
             'about_uz', 'about_ru', 'about_en',
-            'email', 'phone', 'avatar',
+            'email',
+            'phone', 'avatar',
             'telegram_chat_id', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
@@ -151,20 +155,20 @@ class DevInfoDetailSerializer(serializers.ModelSerializer):
     def get_about(self, obj):
         return obj.get_about(self._get_lang())
 
-    @extend_schema_field(DevExperienceSerializer(many=True))
+    @extend_schema_field(DevExperienceAdminSerializer(many=True))
     def get_experiences(self, obj):
-        return DevExperienceSerializer(
+        return DevExperienceAdminSerializer(
             obj.experiences.all(), many=True, context=self.context
         ).data
 
-    @extend_schema_field(DevProjectSerializer(many=True))
+    @extend_schema_field(DevProjectAdminSerializer(many=True))
     def get_projects(self, obj):
-        return DevProjectSerializer(
+        return DevProjectAdminSerializer(
             obj.projects.all(), many=True, context=self.context
         ).data
 
-    @extend_schema_field(CertificateSerializer(many=True))
+    @extend_schema_field(CertificateAdminSerializer(many=True))
     def get_certificates(self, obj):
-        return CertificateSerializer(
+        return CertificateAdminSerializer(
             obj.certificates.all(), many=True, context=self.context
         ).data
