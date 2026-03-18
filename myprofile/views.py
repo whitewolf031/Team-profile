@@ -4,10 +4,21 @@ from rest_framework.permissions import AllowAny
 from myprofile.models import UsersInfo
 from myprofile.serializers import ContactSerializer
 from admin_control.models import (DevInfo, Experience, Project, Blog)
-from admin_control.serializers import (DevInfoSerializer, DevExperienceSerializer, DevProjectSerializer, DevBlogSerializer, DevInfoDetailSerializer)
-from drf_spectacular.utils import extend_schema
+from admin_control.serializers import (DevInfoAdminSerializer, DevExperienceSerializer, DevProjectSerializer, DevBlogSerializer, DevInfoDetailSerializer)
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 from config.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_TOPIC_ID, TELEGRAM_GROUP_ID
 import telebot
+
+LANG_PARAMETER = OpenApiParameter(
+    name='lang',
+    type=OpenApiTypes.STR,
+    location=OpenApiParameter.QUERY,
+    description='Til tanlash: uz | ru | en',
+    enum=['uz', 'ru', 'en'],
+    default='uz',
+    required=False,
+)
 
 def send_telegram_message(text: str, parse_mode: str = "HTML") -> bool:
     if not TELEGRAM_BOT_TOKEN:
@@ -142,11 +153,14 @@ class ContactCreateView(generics.CreateAPIView):
             headers=headers
         )
     
-@extend_schema(tags=['Dev Info'])
+@extend_schema(tags=['Dev Info'], parameters=[LANG_PARAMETER])
 class UserDevInfoListView(generics.ListAPIView):
     queryset = DevInfo.objects.all()
-    serializer_class = DevInfoSerializer
+    serializer_class = DevInfoAdminSerializer
     permission_classes = [AllowAny]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 @extend_schema(tags=['Dev Info'])
 class DevAdminInfoDetailView(generics.RetrieveAPIView):

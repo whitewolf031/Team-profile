@@ -1,17 +1,16 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import "../styles/AboutSection.css";
 
-// Yulduzlarni bir marta generatsiya qilish (har render da o'zgarmaydi)
 const STARS = Array.from({ length: 35 }, (_, i) => ({
   id: i,
-  left:  `${(i * 37 + 11) % 100}%`,
-  top:   `${(i * 53 + 7)  % 100}%`,
-  size:  ((i * 17) % 2) + 1,
-  delay: `${(i * 0.3) % 3}s`,
+  left:     `${(i * 37 + 11) % 100}%`,
+  top:      `${(i * 53 + 7)  % 100}%`,
+  size:     ((i * 17) % 2) + 1,
+  delay:    `${(i * 0.3) % 3}s`,
   duration: `${2 + (i % 3)}s`,
 }));
 
-export default function AboutSection({ profile, navigate }) {
+export default function AboutSection({ profile, navigate, t }) {
   const sorted = useMemo(
     () => [...(profile || [])].sort((a, b) => a.id - b.id),
     [profile]
@@ -60,19 +59,18 @@ export default function AboutSection({ profile, navigate }) {
         ))}
       </div>
 
-      {/* ── Nebula bloblari ── */}
+      {/* ── Nebula ── */}
       <div className="about-nebula about-nebula-1" aria-hidden="true" />
       <div className="about-nebula about-nebula-2" aria-hidden="true" />
       <div className="about-nebula about-nebula-3" aria-hidden="true" />
 
       <div className="section-container about-content">
         <h2 style={{ textAlign: "center", marginBottom: "40px", fontSize: "2.5rem" }}>
-          About
+          {t("about_title")}
         </h2>
 
         <div className={`about-stack ${total === 1 ? "single" : "multi"}`}>
 
-          {/* Kartalar */}
           {sorted.map((person, index) => {
             const slotClass = getSlotClass(index);
             const isMain    = slotClass === "about-card-main";
@@ -96,12 +94,16 @@ export default function AboutSection({ profile, navigate }) {
                 </div>
                 <h3 className="about-card-name">{person.full_name}</h3>
                 <span className="about-card-stack">{person.stack}</span>
+
                 {isMain && (
                   <button
                     className="about-more-btn"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/profile/${person.id}`); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/profile/${person.id}`);
+                    }}
                   >
-                    ↗ More
+                    {t("about_more")}
                   </button>
                 )}
               </div>

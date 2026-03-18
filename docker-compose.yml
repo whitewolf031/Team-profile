@@ -24,12 +24,24 @@ services:
     volumes:
       - .:/app
       - media_volume:/app/media
+      - static_volume:/app/staticfiles
     depends_on:
       db:
-        condition: service_healthy   # ← db tayyor bo'lguncha kutadi
+        condition: service_healthy
     env_file:
       - .env
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
   media_volume:
+  static_volume:

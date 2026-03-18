@@ -1,18 +1,39 @@
 from .models import Blog, DevInfo, Experience, Project, Certificate
-from .serializers import DevBlogSerializer, DevInfoSerializer, DevExperienceSerializer, DevProjectSerializer, CertificateSerializer
+from .serializers import (DevBlogSerializer, DevInfoAdminSerializer, DevExperienceSerializer,
+                          DevProjectSerializer, CertificateSerializer)
 from rest_framework.permissions import IsAdminUser
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 
 
-@extend_schema(tags=['Admin blog control'])
-class DevBlogControl(viewsets.ModelViewSet):
+LANG_PARAMETER = OpenApiParameter(
+    name='lang',
+    type=OpenApiTypes.STR,
+    location=OpenApiParameter.QUERY,
+    description='Til tanlash: uz | ru | en',
+    enum=['uz', 'ru', 'en'],
+    default='uz',
+    required=False,
+)
+
+
+class LangMixin:
+    """
+    Barcha viewset larga lang context uzatish uchun mixin
+    """
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+
+@extend_schema(tags=['Admin Blog Control'], parameters=[LANG_PARAMETER])
+class DevBlogControl(LangMixin, viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = DevBlogSerializer
     permission_classes = [IsAdminUser]
-
-    # ⭐ Image upload ishlashi uchun juda muhim
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
@@ -21,26 +42,32 @@ class DevBlogControl(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save()
 
-@extend_schema(tags=['Admin Info Control'])
-class DevAdminInfoControl(viewsets.ModelViewSet):
-    queryset = DevInfo.objects.all()
-    serializer_class = DevInfoSerializer
-    permission_classes = [IsAdminUser]
 
-@extend_schema(tags=['Admin Experience Control'])
-class DevAdminExperienceControl(viewsets.ModelViewSet):
+@extend_schema(tags=['Admin Info Control'], parameters=[LANG_PARAMETER])
+class DevAdminInfoControl(LangMixin, viewsets.ModelViewSet):
+    queryset = DevInfo.objects.all()
+    serializer_class = DevInfoAdminSerializer
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+
+
+@extend_schema(tags=['Admin Experience Control'], parameters=[LANG_PARAMETER])
+class DevAdminExperienceControl(LangMixin, viewsets.ModelViewSet):
     queryset = Experience.objects.all()
     serializer_class = DevExperienceSerializer
     permission_classes = [IsAdminUser]
 
-@extend_schema(tags=['Admin Project Control'])
-class DevAdminProjectControl(viewsets.ModelViewSet):
+
+@extend_schema(tags=['Admin Project Control'], parameters=[LANG_PARAMETER])
+class DevAdminProjectControl(LangMixin, viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = DevProjectSerializer
     permission_classes = [IsAdminUser]
 
-@extend_schema(tags=['Admin Sertificate control'])
-class DevAdminSertificateControl(viewsets.ModelViewSet):
+
+@extend_schema(tags=['Admin Certificate Control'], parameters=[LANG_PARAMETER])
+class DevAdminCertificateControl(LangMixin, viewsets.ModelViewSet):
     queryset = Certificate.objects.all()
     serializer_class = CertificateSerializer
     permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
