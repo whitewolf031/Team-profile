@@ -62,6 +62,10 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['*']
 CSRF_COOKIE_SECURE = False
+CORS_ALLOWED_ORIGINS = [
+    "https://cybernex-team.uz",
+    "https://www.cybernex-team.uz",
+]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -148,6 +152,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 
 SPECTACULAR_SETTINGS = {
+    'SERVERS': [
+        {'url': env('SERVER_URL')},
+        {'url': env('API_URL_LOCAL')}
+    ],
     'TITLE': 'Team-profile',
         'DESCRIPTION': 'Your project description',
     'VERSION': '1.0.0',

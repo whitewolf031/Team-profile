@@ -174,7 +174,7 @@ export default function CertificateAdmin() {
   };
 
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
-  const devName = (id) => devList.find((d) => d.id === id)?.full_name || `Dev #${id}`;
+  const devName = (id) => devList.find((d) => d.id === id)?.full_name_uz || `Dev #${id}`;
 
   return (
     <>
@@ -223,7 +223,7 @@ export default function CertificateAdmin() {
                   <label className="ct-label">DEV *</label>
                   <select className="ct-select" value={form.dev} onChange={f("dev")}>
                     <option value="">— Tanlang —</option>
-                    {devList.map((d) => <option key={d.id} value={d.id}>{d.full_name}</option>)}
+                    {devList.map((d) => <option key={d.id} value={d.id}>{d.full_name_uz}</option>)}
                   </select>
                 </div>
 

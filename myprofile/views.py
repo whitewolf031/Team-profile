@@ -166,20 +166,26 @@ class UserDevInfoListView(LangContextMixin, generics.ListAPIView):
     serializer_class = DevInfoSerializer
     permission_classes = [AllowAny]
 
-@extend_schema(tags=['Dev Experienct'])
+@extend_schema(tags=['Dev Experienct'], parameters=[LANG_PARAMETER])
 class UserDevExperienceListView(generics.ListAPIView):
     queryset = Experience.objects.all()
     serializer_class = DevExperienceSerializer
     permission_classes = [AllowAny]
 
-@extend_schema(tags=['Dev Project'])
+@extend_schema(tags=['Dev Project'], parameters=[LANG_PARAMETER])
 class UserDevProjectListView(generics.ListAPIView):
     queryset = Project.objects.all()
     serializer_class = DevProjectSerializer
     permission_classes = [AllowAny]
 
-@extend_schema(tags=['Dev blog'])
+@extend_schema(tags=['Dev blog'], parameters=[LANG_PARAMETER])
 class UserDevBlogtListView(generics.ListAPIView):
     queryset = Blog.objects.all()
     serializer_class = DevBlogSerializer
+    permission_classes = [AllowAny]
+
+@extend_schema(tags=['Dev Info'], parameters=[LANG_PARAMETER])
+class UserDevInfoDetailView(LangContextMixin, generics.RetrieveAPIView):
+    queryset = DevInfo.objects.all()
+    serializer_class = DevInfoDetailSerializer  # experiences, projects, certificates bilan
     permission_classes = [AllowAny]

@@ -156,7 +156,7 @@ export default function ExperienceAdmin() {
   };
 
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
-  const devName = (id) => devList.find((d) => d.id === id)?.full_name || `Dev #${id}`;
+  const devName = (id) => devList.find((d) => d.id === id)?.full_name_uz || `Dev #${id}`;
 
   return (
     <>
@@ -205,7 +205,7 @@ export default function ExperienceAdmin() {
                   <label className="ex-label">DEV *</label>
                   <select className="ex-select" value={form.dev} onChange={f("dev")}>
                     <option value="">— Tanlang —</option>
-                    {devList.map((d) => <option key={d.id} value={d.id}>{d.full_name}</option>)}
+                    {devList.map((d) => <option key={d.id} value={d.id}>{d.full_name_uz}</option>)}
                   </select>
                 </div>
 

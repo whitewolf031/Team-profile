@@ -69,11 +69,15 @@ const css = `
   .di-btn-save { background: linear-gradient(135deg, #38bdf8, #0ea5e9); border: none; color: #0a0e1a; padding: 8px 22px; border-radius: 8px; font-weight: 700; font-family: 'Syne', sans-serif; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
   .di-btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(56,189,248,0.3); }
   .di-btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .di-error { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: #f87171; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; }
 `;
 
+// ✅ Model ga mos: full_name_uz/ru/en, stack_uz/ru/en
 const EMPTY_FORM = {
-  full_name: "", stack: "", experience: "",
-  about_uz: "", about_ru: "", about_en: "",
+  full_name_uz: "", full_name_ru: "", full_name_en: "",
+  stack_uz: "",     stack_ru: "",     stack_en: "",
+  experience: "",
+  about_uz: "",     about_ru: "",     about_en: "",
   email: "", phone: "", telegram_chat_id: "",
 };
 
@@ -82,6 +86,7 @@ export default function DevInfoAdmin() {
   const [modal, setModal]                 = useState(false);
   const [editing, setEditing]             = useState(null);
   const [saving, setSaving]               = useState(false);
+  const [error, setError]                 = useState("");
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [avatarFile, setAvatarFile]       = useState(null);
   const [form, setForm]                   = useState(EMPTY_FORM);
@@ -95,11 +100,15 @@ export default function DevInfoAdmin() {
   useEffect(() => { load(); }, []);
 
   const open = (item = null) => {
-    setFormLang("uz");
+    setFormLang("uz"); setError("");
     if (item) {
       setForm({
-        full_name:        item.full_name        || "",
-        stack:            item.stack            || "",
+        full_name_uz:     item.full_name_uz     || "",
+        full_name_ru:     item.full_name_ru     || "",
+        full_name_en:     item.full_name_en     || "",
+        stack_uz:         item.stack_uz         || "",
+        stack_ru:         item.stack_ru         || "",
+        stack_en:         item.stack_en         || "",
         experience:       item.experience       || "",
         about_uz:         item.about_uz         || "",
         about_ru:         item.about_ru         || "",
@@ -119,7 +128,7 @@ export default function DevInfoAdmin() {
     setModal(true);
   };
 
-  const close = () => { setModal(false); setEditing(null); };
+  const close = () => { setModal(false); setEditing(null); setError(""); };
 
   const handleAvatar = (e) => {
     const file = e.target.files[0];
@@ -131,22 +140,35 @@ export default function DevInfoAdmin() {
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const save = async () => {
+    setError("");
+    if (!form.full_name_uz) { setError("// Ism (UZ) kiritilmagan!"); return; }
     setSaving(true);
     try {
-      let payload, config;
-      if (avatarFile) {
-        payload = new FormData();
-        Object.entries(form).forEach(([k, v]) => v !== "" && payload.append(k, v));
-        payload.append("avatar", avatarFile);
-        config = { headers: { "Content-Type": "multipart/form-data" } };
+      const fd = new FormData();
+      // ✅ barcha 3 tildagi fieldlar
+      const fields = [
+        "full_name_uz", "full_name_ru", "full_name_en",
+        "stack_uz", "stack_ru", "stack_en",
+        "about_uz", "about_ru", "about_en",
+        "email", "phone", "telegram_chat_id",
+      ];
+      fields.forEach((k) => { if (form[k]) fd.append(k, form[k]); });
+      if (form.experience) fd.append("experience", Number(form.experience));
+      if (avatarFile)      fd.append("avatar", avatarFile);
+
+      if (editing) {
+        await api.patch(`/api/admin-control/dev/${editing}/`, fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       } else {
-        payload = { ...form, experience: form.experience ? Number(form.experience) : null };
-        config = {};
+        await api.post("/api/admin-control/dev/", fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
-      if (editing) await api.patch(`/api/admin-control/dev/${editing}/`, payload, config);
-      else         await api.post("/api/admin-control/dev/", payload, config);
       close(); load();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      setError("// Xato: " + (e.response?.data ? JSON.stringify(e.response.data) : e.message));
+    }
     setSaving(false);
   };
 
@@ -175,16 +197,19 @@ export default function DevInfoAdmin() {
         {data.map((item) => (
           <div key={item.id} className="di-card">
             <div className="di-avatar">
-              {item.avatar ? <img src={item.avatar} alt={item.full_name} /> : <Icon name="user" />}
+              {item.avatar
+                ? <img src={item.avatar} alt={item.full_name_uz} />
+                : <Icon name="user" />}
             </div>
             <div className="di-body">
-              <div className="di-name">{item.full_name}</div>
+              {/* ✅ full_name_uz ko'rsatiladi */}
+              <div className="di-name">{item.full_name_uz}</div>
               <div className="di-meta">
-                {item.stack            && <span className="di-tag di-tag-blue">{item.stack}</span>}
+                {item.stack_uz         && <span className="di-tag di-tag-blue">{item.stack_uz}</span>}
                 {item.experience       && <span className="di-tag di-tag-green">{item.experience} yil</span>}
                 {item.email            && <span className="di-tag di-tag-purple">{item.email}</span>}
                 {item.phone            && <span className="di-tag di-tag-yellow">{item.phone}</span>}
-                {item.telegram_chat_id && <span className="di-tag di-tag-tg">TG: {item.telegram_chat_id}</span>}
+                {item.telegram_chat_id && <span className="di-tag di-tag-tg"><Icon name="tg" /> {item.telegram_chat_id}</span>}
               </div>
               {item.about_uz && <div className="di-text">{item.about_uz}</div>}
             </div>
@@ -199,10 +224,14 @@ export default function DevInfoAdmin() {
           <div className="di-overlay" onClick={(e) => e.target === e.currentTarget && close()}>
             <div className="di-modal">
               <div className="di-modal-head">
-                <span className="di-modal-title">{editing ? "Ma'lumotni tahrirlash" : "Yangi ma'lumot"}</span>
+                <span className="di-modal-title">
+                  {editing ? "Ma'lumotni tahrirlash" : "Yangi ma'lumot"}
+                </span>
                 <button className="di-modal-close" onClick={close}><Icon name="close" /></button>
               </div>
+
               <div className="di-modal-body">
+                {error && <div className="di-error">{error}</div>}
 
                 {/* AVATAR */}
                 <div className="di-field">
@@ -218,33 +247,37 @@ export default function DevInfoAdmin() {
                   </div>
                 </div>
 
-                {/* FULL NAME */}
+                {/* LangTabs */}
+                <LangTabs lang={formLang} setLang={setFormLang} />
+
+                {/* ✅ TO'LIQ ISM — 3 tilda */}
                 <div className="di-field">
-                  <label className="di-label">TO'LIQ ISM *</label>
-                  <input className="di-input" placeholder="Sardorbek Ergashev"
-                    value={form.full_name} onChange={f("full_name")} />
+                  <label className="di-label">TO'LIQ ISM * ({formLang.toUpperCase()})</label>
+                  {formLang === "uz" && <input className="di-input" placeholder="Sardorbek Ergashev" value={form.full_name_uz} onChange={f("full_name_uz")} />}
+                  {formLang === "ru" && <input className="di-input" placeholder="Сардорбек Эргашев"  value={form.full_name_ru} onChange={f("full_name_ru")} />}
+                  {formLang === "en" && <input className="di-input" placeholder="Sardorbek Ergashev" value={form.full_name_en} onChange={f("full_name_en")} />}
                 </div>
 
-                {/* STACK + EXPERIENCE */}
-                <div className="di-row">
-                  <div className="di-field">
-                    <label className="di-label">STACK</label>
-                    <input className="di-input" placeholder="Python, Django, React"
-                      value={form.stack} onChange={f("stack")} />
-                  </div>
-                  <div className="di-field">
-                    <label className="di-label">TAJRIBA (yil)</label>
-                    <input className="di-input" type="number" placeholder="2" min="0"
-                      value={form.experience} onChange={f("experience")} />
-                  </div>
+                {/* ✅ STACK — 3 tilda */}
+                <div className="di-field">
+                  <label className="di-label">STACK ({formLang.toUpperCase()})</label>
+                  {formLang === "uz" && <input className="di-input" placeholder="Python, Django, React" value={form.stack_uz} onChange={f("stack_uz")} />}
+                  {formLang === "ru" && <input className="di-input" placeholder="Python, Django, React" value={form.stack_ru} onChange={f("stack_ru")} />}
+                  {formLang === "en" && <input className="di-input" placeholder="Python, Django, React" value={form.stack_en} onChange={f("stack_en")} />}
                 </div>
 
-                {/* ABOUT — 3 tilda */}
+                {/* TAJRIBA */}
                 <div className="di-field">
-                  <label className="di-label">O'ZINGIZ HAQINGIZDA</label>
-                  <LangTabs lang={formLang} setLang={setFormLang} />
+                  <label className="di-label">TAJRIBA (yil)</label>
+                  <input className="di-input" type="number" placeholder="2" min="0"
+                    value={form.experience} onChange={f("experience")} />
+                </div>
+
+                {/* ✅ ABOUT — 3 tilda */}
+                <div className="di-field">
+                  <label className="di-label">O'ZINGIZ HAQINGIZDA ({formLang.toUpperCase()})</label>
                   {formLang === "uz" && <textarea className="di-textarea" placeholder="Men full-stack dasturchiman..." value={form.about_uz} onChange={f("about_uz")} />}
-                  {formLang === "ru" && <textarea className="di-textarea" placeholder="Я full-stack разработчик..." value={form.about_ru} onChange={f("about_ru")} />}
+                  {formLang === "ru" && <textarea className="di-textarea" placeholder="Я full-stack разработчик..."   value={form.about_ru} onChange={f("about_ru")} />}
                   {formLang === "en" && <textarea className="di-textarea" placeholder="I am a full-stack developer..." value={form.about_en} onChange={f("about_en")} />}
                 </div>
 
@@ -275,7 +308,7 @@ export default function DevInfoAdmin() {
 
               <div className="di-modal-foot">
                 <button className="di-btn-cancel" onClick={close}>Bekor qilish</button>
-                <button className="di-btn-save" onClick={save} disabled={saving || !form.full_name}>
+                <button className="di-btn-save" onClick={save} disabled={saving || !form.full_name_uz}>
                   <Icon name="check" /> {saving ? "Saqlanmoqda..." : "Saqlash"}
                 </button>
               </div>
