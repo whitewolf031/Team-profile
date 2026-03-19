@@ -106,7 +106,7 @@ function Home() {
         try {
             const res  = await api.get(`/api/dev/info/?lang=${lang}`);
             const data = res.data;
-            setProfile(Array.isArray(data) ? data : [data]);
+            setProfile(Array.isArray(data) ? data : data.results ?? [data]);
         } catch (err) { console.error(err); }
     };
 

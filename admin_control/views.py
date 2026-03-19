@@ -1,6 +1,9 @@
 from .models import Blog, DevInfo, Experience, Project, Certificate
-from .serializers import (DevBlogAdminSerializer, DevInfoAdminSerializer, DevExperienceAdminSerializer,
-                          DevProjectAdminSerializer, CertificateAdminSerializer)
+from .serializers import (
+    DevBlogAdminSerializer, DevInfoAdminSerializer,
+    DevExperienceAdminSerializer, DevProjectAdminSerializer,
+    CertificateAdminSerializer,
+)
 from rest_framework.permissions import IsAdminUser
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -9,65 +12,57 @@ from drf_spectacular.types import OpenApiTypes
 
 
 LANG_PARAMETER = OpenApiParameter(
-    name='lang',
-    type=OpenApiTypes.STR,
+    name='lang', type=OpenApiTypes.STR,
     location=OpenApiParameter.QUERY,
     description='Til tanlash: uz | ru | en',
-    enum=['uz', 'ru', 'en'],
-    default='uz',
-    required=False,
+    enum=['uz', 'ru', 'en'], default='uz', required=False,
 )
 
 
 class LangMixin:
-    """
-    Barcha viewset larga lang context uzatish uchun mixin
-    """
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
 
 
-@extend_schema(tags=['Admin Blog Control'], parameters=[LANG_PARAMETER])
-class DevBlogControl(LangMixin, viewsets.ModelViewSet):
-    queryset = Blog.objects.all()
-    serializer_class = DevBlogAdminSerializer
+@extend_schema(tags=['Admin — Info'], parameters=[LANG_PARAMETER])
+class DevAdminInfoControl(LangMixin, viewsets.ModelViewSet):
+    queryset           = DevInfo.objects.all()
+    serializer_class   = DevInfoAdminSerializer
     permission_classes = [IsAdminUser]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes     = [MultiPartParser, FormParser]
+
+
+@extend_schema(tags=['Admin — Experience'], parameters=[LANG_PARAMETER])
+class DevAdminExperienceControl(LangMixin, viewsets.ModelViewSet):
+    queryset           = Experience.objects.select_related('dev').all()
+    serializer_class   = DevExperienceAdminSerializer
+    permission_classes = [IsAdminUser]
+
+
+@extend_schema(tags=['Admin — Projects'], parameters=[LANG_PARAMETER])
+class DevAdminProjectControl(LangMixin, viewsets.ModelViewSet):
+    queryset           = Project.objects.select_related('dev').all()
+    serializer_class   = DevProjectAdminSerializer
+    permission_classes = [IsAdminUser]
+    parser_classes     = [MultiPartParser, FormParser]
+
+
+@extend_schema(tags=['Admin — Blog'], parameters=[LANG_PARAMETER])
+class DevBlogControl(LangMixin, viewsets.ModelViewSet):
+    queryset           = Blog.objects.all()
+    serializer_class   = DevBlogAdminSerializer
+    permission_classes = [IsAdminUser]
+    parser_classes     = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def perform_update(self, serializer):
-        serializer.save()
 
-
-@extend_schema(tags=['Admin Info Control'], parameters=[LANG_PARAMETER])
-class DevAdminInfoControl(LangMixin, viewsets.ModelViewSet):
-    queryset = DevInfo.objects.all()
-    serializer_class = DevInfoAdminSerializer
-    permission_classes = [IsAdminUser]
-    parser_classes = [MultiPartParser, FormParser]
-
-
-@extend_schema(tags=['Admin Experience Control'], parameters=[LANG_PARAMETER])
-class DevAdminExperienceControl(LangMixin, viewsets.ModelViewSet):
-    queryset = Experience.objects.all()
-    serializer_class = DevExperienceAdminSerializer
-    permission_classes = [IsAdminUser]
-
-
-@extend_schema(tags=['Admin Project Control'], parameters=[LANG_PARAMETER])
-class DevAdminProjectControl(LangMixin, viewsets.ModelViewSet):
-    queryset = Project.objects.all()
-    serializer_class = DevProjectAdminSerializer
-    permission_classes = [IsAdminUser]
-
-
-@extend_schema(tags=['Admin Certificate Control'], parameters=[LANG_PARAMETER])
+@extend_schema(tags=['Admin — Certificates'], parameters=[LANG_PARAMETER])
 class DevAdminCertificateControl(LangMixin, viewsets.ModelViewSet):
-    queryset = Certificate.objects.all()
-    serializer_class = CertificateAdminSerializer
+    queryset           = Certificate.objects.select_related('dev').all()
+    serializer_class   = CertificateAdminSerializer
     permission_classes = [IsAdminUser]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes     = [MultiPartParser, FormParser]

@@ -31,6 +31,20 @@ class DevInfo(models.Model):
         elif lang == 'en':
             return self.about_en or self.about_uz
         return self.about_uz
+    
+    def get_full_name(self, lang='uz'):
+        if lang == 'ru':
+            return self.full_name_ru or self.full_name_uz
+        elif lang == 'en':
+            return self.full_name_en or self.full_name_uz
+        return self.full_name_uz
+    
+    def get_stack(self, lang='uz'):
+        if lang == 'ru':
+            return self.stack_ru or self.stack_uz
+        elif lang == 'en':
+            return self.stack_en or self.stack_uz
+        return self.stack_uz
 
     def __str__(self):
         return self.full_name
@@ -114,6 +128,13 @@ class Experience(models.Model):
         return self.achievements_uz
 
     def get_responsibilities(self, lang='uz'):
+        if lang == 'ru':
+            return self.responsibilities_ru or self.responsibilities_uz
+        elif lang == 'en':
+            return self.responsibilities_en or self.responsibilities_uz
+        return self.responsibilities_uz
+    
+    def get_teaching_fucus(self, lang='uz'):
         if lang == 'ru':
             return self.responsibilities_ru or self.responsibilities_uz
         elif lang == 'en':
