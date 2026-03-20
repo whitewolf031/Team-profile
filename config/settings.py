@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta
 import environ
 import os
 
@@ -37,6 +38,7 @@ INSTALLED_APPS += [
     'rest_framework',
     'django_filters',
     'drf_spectacular',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 INSTALLED_APPS += [
@@ -192,4 +194,11 @@ REST_FRAMEWORK = {
     ],
 
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME':  timedelta(days=1),    # 1 kun (default 5 daqiqa)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),   # 30 kun
+    'ROTATE_REFRESH_TOKENS':  True,                 # refresh qilganda yangi token
+    'BLACKLIST_AFTER_ROTATION': True,               # eski refresh tokenni o'chirish
 }
