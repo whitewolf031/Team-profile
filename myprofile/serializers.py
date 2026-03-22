@@ -18,7 +18,7 @@ class ContactSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DevExperienceSerializer(serializers.ModelSerializer):
+class PublicExperienceSerializer(serializers.ModelSerializer):
     title            = serializers.SerializerMethodField()
     achievements     = serializers.SerializerMethodField()
     responsibilities = serializers.SerializerMethodField()
@@ -55,7 +55,7 @@ class DevExperienceSerializer(serializers.ModelSerializer):
         return obj.get_teaching_fucus(self._get_lang())
 
 
-class DevProjectSerializer(serializers.ModelSerializer):
+class PublicProjectSerializer(serializers.ModelSerializer):
     title       = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
 
@@ -80,7 +80,7 @@ class DevProjectSerializer(serializers.ModelSerializer):
         return obj.get_description(self._get_lang())
 
 
-class DevBlogSerializer(serializers.ModelSerializer):
+class PublicBlogSerializer(serializers.ModelSerializer):
     title   = serializers.SerializerMethodField()
     content = serializers.SerializerMethodField()
 
@@ -105,7 +105,7 @@ class DevBlogSerializer(serializers.ModelSerializer):
         return obj.get_content(self._get_lang())
 
 
-class DevInfoSerializer(serializers.ModelSerializer):
+class PublicDevInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     stack     = serializers.SerializerMethodField()
     about     = serializers.SerializerMethodField()

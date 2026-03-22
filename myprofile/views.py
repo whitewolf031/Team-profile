@@ -4,7 +4,13 @@ from rest_framework.permissions import AllowAny
 from myprofile.models import UsersInfo
 from myprofile.serializers import ContactSerializer
 from admin_control.models import (DevInfo, Experience, Project, Blog)
-from .serializers import (DevInfoSerializer, DevExperienceSerializer, DevProjectSerializer, DevBlogSerializer)
+from .serializers import (
+    PublicProjectSerializer,
+    PublicExperienceSerializer,
+    PublicBlogSerializer,
+    PublicDevInfoSerializer,
+    ContactSerializer
+)
 from admin_control.serializers import DevInfoDetailSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
@@ -163,25 +169,25 @@ class ContactCreateView(generics.CreateAPIView):
 @extend_schema(tags=['Dev Info'], parameters=[LANG_PARAMETER])
 class UserDevInfoListView(LangContextMixin, generics.ListAPIView):
     queryset = DevInfo.objects.all()
-    serializer_class = DevInfoSerializer
+    serializer_class = PublicDevInfoSerializer
     permission_classes = [AllowAny]
 
 @extend_schema(tags=['Dev Experienct'], parameters=[LANG_PARAMETER])
 class UserDevExperienceListView(generics.ListAPIView):
     queryset = Experience.objects.all()
-    serializer_class = DevExperienceSerializer
+    serializer_class = PublicExperienceSerializer
     permission_classes = [AllowAny]
 
 @extend_schema(tags=['Dev Project'], parameters=[LANG_PARAMETER])
 class UserDevProjectListView(generics.ListAPIView):
     queryset = Project.objects.all()
-    serializer_class = DevProjectSerializer
+    serializer_class = PublicProjectSerializer
     permission_classes = [AllowAny]
 
 @extend_schema(tags=['Dev blog'], parameters=[LANG_PARAMETER])
 class UserDevBlogtListView(generics.ListAPIView):
     queryset = Blog.objects.all()
-    serializer_class = DevBlogSerializer
+    serializer_class = PublicBlogSerializer
     permission_classes = [AllowAny]
 
 @extend_schema(tags=['Dev Info'], parameters=[LANG_PARAMETER])
