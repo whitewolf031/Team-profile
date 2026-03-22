@@ -13,8 +13,9 @@ function ProfileDetail() {
     const [person,   setPerson]   = useState(null);
     const [lightbox, setLightbox] = useState(null);
     const [name,     setName]     = useState("");
-    const [email,    setEmail]    = useState("");
-    const [message,  setMessage]  = useState("");
+    const [phoneNumber, setPhoneNumber]           = useState("");
+    const [telegramUsername, setTelegramUsername] = useState("");
+    const [message, setMessage]                   = useState("");
     const [sending,  setSending]  = useState(false);
     const [sent,     setSent]     = useState(false);
     const [langOpen, setLangOpen] = useState(false);
@@ -42,11 +43,13 @@ function ProfileDetail() {
             await api.post("/contact/create/", {
                 dev_id: person.id,
                 name,
-                email,
+                phone_number: phoneNumber,
+                telegram_username: telegramUsername,
                 message,
             });
             setSent(true);
-            setName(""); setEmail(""); setMessage("");
+            setName(""); setPhoneNumber(""); 
+            setTelegramUsername(""); setMessage("");
         } catch (err) {
             console.error(err);
             alert("Xabar yuborishda xato!");

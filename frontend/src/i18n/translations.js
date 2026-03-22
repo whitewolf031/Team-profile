@@ -39,6 +39,8 @@ const translations = {
         contact_success_title: "Xabar yuborildi!",
         contact_success_text: "Tez orada javob beramiz.",
         contact_send_another: "Yana yuborish",
+        contact_phone_label: "Telefon raqam",
+        contact_tg_label:    "Telegram username",
         back: "Orqaga",
     },
     ru: {
@@ -81,6 +83,8 @@ const translations = {
         contact_success_title: "Сообщение отправлено!",
         contact_success_text: "Скоро ответим.",
         contact_send_another: "Отправить ещё",
+        contact_phone_label: "Номер телефона",
+        contact_tg_label:    "Telegram username",
         back: "Назад",
     },
     en: {
@@ -123,6 +127,8 @@ const translations = {
         contact_success_title: "Message sent!",
         contact_success_text: "We'll get back to you soon.",
         contact_send_another: "Send another",
+        contact_phone_label: "Phone number",
+        contact_tg_label:    "Telegram username",   
         back: "Back",
     },
 };
