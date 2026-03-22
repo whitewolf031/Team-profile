@@ -137,7 +137,8 @@ class ContactCreateView(generics.CreateAPIView):
             f"📩 <b>Sizga yangi xabar!</b>\n"
             f"🕐 <b>Sana:</b> {date_str} {time_str}\n\n"
             f"👤 <b>Name:</b> {instance.name}\n"
-            f"📧 <b>Email:</b> {instance.email}\n"
+            f"📧 <b>Telefon:</b> {instance.phone_number}\n"
+            f"📧 <b>Username:</b> {instance.telegram_username}\n"
             f"💬 <b>Message:</b>\n{instance.message}"
         )
 
