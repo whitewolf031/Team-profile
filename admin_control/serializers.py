@@ -3,7 +3,6 @@ from drf_spectacular.types import OpenApiTypes
 from rest_framework import serializers
 from .models import Blog, DevInfo, Experience, Project, Certificate
 
-
 # ─────────────────────────────────────────
 # ADMIN serializers — barcha til fieldlari
 # ─────────────────────────────────────────
@@ -23,7 +22,6 @@ class DevInfoAdminSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-
 class DevExperienceAdminSerializer(serializers.ModelSerializer):
     """Admin: 3 tilda barcha fieldlar"""
     class Meta:
@@ -38,7 +36,6 @@ class DevExperienceAdminSerializer(serializers.ModelSerializer):
             'teaching_focus_uz',  'teaching_focus_ru',  'teaching_focus_en',
             'student_count', 'age_range',
         ]
-
 
 class DevProjectAdminSerializer(serializers.ModelSerializer):
     """Admin: 3 tilda barcha fieldlar"""
@@ -56,7 +53,6 @@ class DevProjectAdminSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at']
 
-
 class DevBlogAdminSerializer(serializers.ModelSerializer):
     """Admin: 3 tilda barcha fieldlar"""
     author_name = serializers.CharField(source="author.username", read_only=True)
@@ -71,7 +67,6 @@ class DevBlogAdminSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'author_name']
 
-
 class CertificateAdminSerializer(serializers.ModelSerializer):
     """Admin: 3 tilda barcha fieldlar"""
     class Meta:
@@ -83,7 +78,6 @@ class CertificateAdminSerializer(serializers.ModelSerializer):
             'issued_date', 'image',
         ]
         read_only_fields = ['id']
-
 
 # ─────────────────────────────────────────
 # PUBLIC serializer — faqat so'ralgan til
@@ -121,7 +115,6 @@ class DevExperienceSerializer(serializers.ModelSerializer):
     @extend_schema_field(OpenApiTypes.STR)
     def get_teaching_focus(self, obj):   return obj.get_teaching_focus(self._lang())
 
-
 class DevProjectSerializer(serializers.ModelSerializer):
     title       = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -141,7 +134,6 @@ class DevProjectSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_description(self, obj): return obj.get_description(self._lang())
-
 
 class DevBlogSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source="author.username", read_only=True)
@@ -164,7 +156,6 @@ class DevBlogSerializer(serializers.ModelSerializer):
     @extend_schema_field(OpenApiTypes.STR)
     def get_content(self, obj): return obj.get_content(self._lang())
 
-
 class CertificateSerializer(serializers.ModelSerializer):
     title  = serializers.SerializerMethodField()
     issuer = serializers.SerializerMethodField()
@@ -183,7 +174,6 @@ class CertificateSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_issuer(self, obj): return obj.get_issuer(self._lang())
-
 
 class DevInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
@@ -210,7 +200,6 @@ class DevInfoSerializer(serializers.ModelSerializer):
     @extend_schema_field(OpenApiTypes.STR)
     def get_about(self, obj):     
         return obj.get_about(self._lang())
-
 
 class DevInfoDetailSerializer(serializers.ModelSerializer):
     """Detail endpoint — nested ma'lumotlar bilan, faqat so'ralgan tilda"""

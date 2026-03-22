@@ -64,7 +64,6 @@ class UsersInfo(models.Model):
     def __str__(self):
         return f"{self.name} → {self.dev}"
 
-
 class Experience(models.Model):
     EMPLOYMENT_TYPE_CHOICES = [
         ('full_time', 'Full-time'),
@@ -134,7 +133,7 @@ class Experience(models.Model):
             return self.responsibilities_en or self.responsibilities_uz
         return self.responsibilities_uz
     
-    def get_teaching_focus(self, lang='uz'):  # ← shu yo'q edi
+    def get_teaching_focus(self, lang='uz'):
         if lang == 'ru':
             return self.teaching_focus_ru or self.teaching_focus_uz
         elif lang == 'en':
@@ -143,7 +142,6 @@ class Experience(models.Model):
     
     def __str__(self):
         return f"{self.title_uz} ({self.employment_type})"
-
 
 class Project(models.Model):
     TECHNOLOGY_CHOICES = [
@@ -198,7 +196,6 @@ class Project(models.Model):
     def __str__(self):
         return self.title_uz
 
-
 class Blog(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -237,7 +234,6 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title_uz
-
 
 class Certificate(models.Model):
     dev = models.ForeignKey(
