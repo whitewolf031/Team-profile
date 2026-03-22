@@ -24,3 +24,6 @@ docker-compose logs -f web
 
 docker-compose down
 docker-compose up -d --build
+
+docker-compose restart frontend
+docker-compose up -d --build frontend
