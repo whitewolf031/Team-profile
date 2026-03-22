@@ -27,3 +27,10 @@ docker-compose up -d --build
 
 docker-compose restart frontend
 docker-compose up -d --build frontend
+
+# Faqat web va frontend ni to'xtatib qayta build qiling
+docker stop django-web react-frontend
+docker rm django-web react-frontend
+docker-compose up -d --build web frontend
+
+docker exec -it team-profile-db-1 psql -U postgres -d your_db_name

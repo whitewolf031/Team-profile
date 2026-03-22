@@ -366,14 +366,32 @@ function ProfileDetail() {
                                 />
                             </div>
                             <div className="detail-form-group">
-                                <label>{t("contact_email_label")}</label>
+                                <label>{t("contact_phone_label")}</label>
                                 <input
-                                    type="email"
-                                    placeholder={t("contact_email_ph")}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    type="tel"
+                                    placeholder="+998 90 123 45 67"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
                                     required
                                 />
+                            </div>
+                            <div className="detail-form-group">
+                                <label>{t("contact_tg_label")}</label>
+                                <div style={{ position: "relative" }}>
+                                    <span style={{
+                                        position: "absolute", left: "14px", top: "50%",
+                                        transform: "translateY(-50%)", color: "#6b7280",
+                                        fontFamily: "monospace", zIndex: 1
+                                    }}>@</span>
+                                    <input
+                                        type="text"
+                                        placeholder="username"
+                                        value={telegramUsername}
+                                        onChange={(e) => setTelegramUsername(e.target.value)}
+                                        style={{ paddingLeft: "28px" }}
+                                        required
+                                    />
+                                </div>
                             </div>
                             <div className="detail-form-group">
                                 <label>{t("contact_msg_label")}</label>
@@ -396,7 +414,6 @@ function ProfileDetail() {
                     )}
                 </div>
             </div>
-
             {/* ── Back button ── */}
             <div className="detail-back-bottom">
                 <button className="btn-back-bottom" onClick={() => navigate(-1)}>
