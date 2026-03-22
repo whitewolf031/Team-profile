@@ -134,13 +134,13 @@ class Experience(models.Model):
             return self.responsibilities_en or self.responsibilities_uz
         return self.responsibilities_uz
     
-    def get_teaching_fucus(self, lang='uz'):
+    def get_teaching_focus(self, lang='uz'):  # ← shu yo'q edi
         if lang == 'ru':
-            return self.responsibilities_ru or self.responsibilities_uz
+            return self.teaching_focus_ru or self.teaching_focus_uz
         elif lang == 'en':
-            return self.responsibilities_en or self.responsibilities_uz
-        return self.responsibilities_uz
-
+            return self.teaching_focus_en or self.teaching_focus_uz
+        return self.teaching_focus_uz
+    
     def __str__(self):
         return f"{self.title_uz} ({self.employment_type})"
 
