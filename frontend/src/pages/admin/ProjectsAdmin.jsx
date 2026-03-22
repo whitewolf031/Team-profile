@@ -11,7 +11,7 @@ const TECH_CHOICES = [
   { value: "django",           label: "Django" },
   { value: "react",            label: "React" },
   { value: "docker",           label: "Docker" },
-  { value: "PosgreSQl",        label: "PostgreSQL" },
+  { value: "postgresql",        label: "PostgreSQL" },
   { value: "MySQL",            label: "MySQL" },
   { value: "SQLite",           label: "SQLite" },
 ];
@@ -130,24 +130,37 @@ export default function ProjectAdmin() {
   };
 
   const save = async () => {
-    setSaving(true);
-    try {
-      const payload = {
-        dev:            form.dev ? Number(form.dev) : null,
-        title_uz:       form.title_uz,
-        title_ru:       form.title_ru,
-        title_en:       form.title_en,
-        description_uz: form.description_uz,
-        description_ru: form.description_ru,
-        description_en: form.description_en,
-        project_url:    form.project_url || null,
-        technologies:   form.technologies,
-      };
-      if (editing) await api.put(`/api/admin-control/projects/${editing}/`, payload);
-      else         await api.post("/api/admin-control/projects/", payload);
-      close(); load();
-    } catch (e) { console.error(e.response?.data); }
-    setSaving(false);
+      setSaving(true);
+      try {
+          const fd = new FormData();
+          
+          if (form.dev) fd.append("dev", form.dev);
+          fd.append("title_uz",       form.title_uz       || "");
+          fd.append("title_ru",       form.title_ru       || "");
+          fd.append("title_en",       form.title_en       || "");
+          fd.append("description_uz", form.description_uz || "");
+          fd.append("description_ru", form.description_ru || "");
+          fd.append("description_en", form.description_en || "");
+          fd.append("project_url",    form.project_url    || "");
+          
+          // technologies array uchun
+          form.technologies.forEach((t) => fd.append("technologies", t));
+
+          if (editing) {
+              await api.patch(`/api/admin-control/projects/${editing}/`, fd, {
+                  headers: { "Content-Type": "multipart/form-data" }
+              });
+          } else {
+              await api.post("/api/admin-control/projects/", fd, {
+                  headers: { "Content-Type": "multipart/form-data" }
+              });
+          }
+
+          close(); load();
+      } catch (e) {
+          console.error("Xato:", e.response?.data);
+      }
+      setSaving(false);
   };
 
   const del = async (id) => {
