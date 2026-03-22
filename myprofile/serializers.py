@@ -4,19 +4,18 @@ from admin_control.models import DevInfo, Experience, Project, Certificate, Blog
 from drf_spectacular.utils import extend_schema_field
 from drf_spectacular.types import OpenApiTypes
 
-
 class ContactSerializer(serializers.ModelSerializer):
     dev_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = UsersInfo
-        fields = ['id', 'name', 'email', 'message', 'dev_id', 'created_at']
+        fields = ['id', 'name', 'phone_number', 'telegram_username', 
+                  'message', 'dev_id', 'created_at']
         read_only_fields = ['id', 'created_at']
 
     def create(self, validated_data):
         validated_data.pop('dev_id', None)
         return super().create(validated_data)
-
 
 class PublicExperienceSerializer(serializers.ModelSerializer):
     title            = serializers.SerializerMethodField()
@@ -54,7 +53,6 @@ class PublicExperienceSerializer(serializers.ModelSerializer):
     def get_teaching_focus(self, obj):          # ✅ typo tuzatildi
         return obj.get_teaching_fucus(self._get_lang())
 
-
 class PublicProjectSerializer(serializers.ModelSerializer):
     title       = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -79,7 +77,6 @@ class PublicProjectSerializer(serializers.ModelSerializer):
     def get_description(self, obj):
         return obj.get_description(self._get_lang())
 
-
 class PublicBlogSerializer(serializers.ModelSerializer):
     title   = serializers.SerializerMethodField()
     content = serializers.SerializerMethodField()
@@ -103,7 +100,6 @@ class PublicBlogSerializer(serializers.ModelSerializer):
     @extend_schema_field(OpenApiTypes.STR)
     def get_content(self, obj):
         return obj.get_content(self._get_lang())
-
 
 class PublicDevInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()

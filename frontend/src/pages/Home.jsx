@@ -53,7 +53,8 @@ function Home() {
     const [activeSection, setActiveSection] = useState("home");
     const [scrolled, setScrolled]           = useState(false);
     const [name, setName]       = useState("");
-    const [email, setEmail]     = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [telegramUsername, setTelegramUsername] = useState("");
     const [message, setMessage] = useState("");
 
     const sections = ["home", "about", "projects", "contact"];
@@ -122,10 +123,16 @@ function Home() {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await api.post("/group/create/", { name, email, message });
+            const res = await api.post("/group/create/", {
+                name,
+                phone_number: phoneNumber,
+                telegram_username: telegramUsername,
+                message,
+            });
             if (res.status === 201 || res.status === 200) {
                 setFormSubmitted(true);
-                setName(""); setEmail(""); setMessage("");
+                setName(""); setPhoneNumber(""); 
+                setTelegramUsername(""); setMessage("");
             }
         } catch (err) {
             console.error(err);
@@ -444,45 +451,63 @@ function Home() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <form onSubmit={createContact} className="contact-form">
-                                        <div className="cf-group">
-                                            <label>{t("contact_name_label")}</label>
+                                <form onSubmit={createContact} className="contact-form">
+                                    <div className="cf-group">
+                                        <label>{t("contact_name_label")}</label>
+                                        <input
+                                            type="text"
+                                            placeholder={t("contact_name_ph")}
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="cf-group">
+                                        <label>{t("contact_phone_label")}</label>
+                                        <input
+                                            type="tel"
+                                            placeholder="+998 90 123 45 67"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="cf-group">
+                                        <label>{t("contact_tg_label")}</label>
+                                        <div style={{ position: "relative" }}>
+                                            <span style={{
+                                                position: "absolute", left: "14px", top: "50%",
+                                                transform: "translateY(-50%)", color: "#6b7280",
+                                                fontFamily: "monospace"
+                                            }}>@</span>
                                             <input
                                                 type="text"
-                                                placeholder={t("contact_name_ph")}
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
+                                                placeholder="username"
+                                                value={telegramUsername}
+                                                onChange={(e) => setTelegramUsername(e.target.value)}
+                                                style={{ paddingLeft: "28px" }}
                                                 required
                                             />
                                         </div>
-                                        <div className="cf-group">
-                                            <label>{t("contact_email_label")}</label>
-                                            <input
-                                                type="email"
-                                                placeholder={t("contact_email_ph")}
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="cf-group">
-                                            <label>{t("contact_msg_label")}</label>
-                                            <textarea
-                                                placeholder={t("contact_msg_ph")}
-                                                value={message}
-                                                onChange={(e) => setMessage(e.target.value)}
-                                                required
-                                                rows={5}
-                                            />
-                                        </div>
-                                        <button type="submit" className="cf-submit" disabled={loading}>
-                                            {loading ? (
-                                                <><span className="cf-spinner" /> {t("contact_sending")}</>
-                                            ) : (
-                                                <>{t("contact_submit")} <span>→</span></>
-                                            )}
-                                        </button>
-                                    </form>
+                                    </div>
+                                    <div className="cf-group">
+                                        <label>{t("contact_msg_label")}</label>
+                                        <textarea
+                                            placeholder={t("contact_msg_ph")}
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            required
+                                            rows={5}
+                                        />
+                                    </div>
+                                    <button type="submit" className="cf-submit" disabled={loading}>
+                                        {loading ? (
+                                            <><span className="cf-spinner" /> {t("contact_sending")}</>
+                                        ) : (
+                                            <>{t("contact_submit")} <span>→</span></>
+                                        )}
+                                    </button>
+                                </form>
                                 )}
                             </div>
                         </div>
