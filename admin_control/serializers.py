@@ -104,16 +104,20 @@ class DevExperienceSerializer(serializers.ModelSerializer):
         return req.query_params.get('lang', 'uz') if req else 'uz'
 
     @extend_schema_field(OpenApiTypes.STR)
-    def get_title(self, obj):            return obj.get_title(self._lang())
+    def get_title(self, obj):            
+        return obj.get_title(self._lang())
 
     @extend_schema_field(OpenApiTypes.STR)
-    def get_achievements(self, obj):     return obj.get_achievements(self._lang())
+    def get_achievements(self, obj):     
+        return obj.get_achievements(self._lang())
 
     @extend_schema_field(OpenApiTypes.STR)
-    def get_responsibilities(self, obj): return obj.get_responsibilities(self._lang())
+    def get_responsibilities(self, obj): 
+        return obj.get_responsibilities(self._lang())
 
     @extend_schema_field(OpenApiTypes.STR)
-    def get_teaching_focus(self, obj):   return obj.get_teaching_focus(self._lang())
+    def get_teaching_focus(self, obj):   
+        return obj.get_teaching_focus(self._lang())
 
 class DevProjectSerializer(serializers.ModelSerializer):
     title       = serializers.SerializerMethodField()
