@@ -67,6 +67,7 @@ CSRF_COOKIE_SECURE = False
 CORS_ALLOWED_ORIGINS = [
     "https://cybernex-team.uz",
     "https://www.cybernex-team.uz",
+    "https://api.cybernex-team.uz",
 ]
 
 ROOT_URLCONF = 'config.urls'
