@@ -245,3 +245,108 @@
   }
   .about-nebula-2 { display: none; }
 }
+
+/* Carousel wrapper */
+.about-carousel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+/* Row — 4 ta card yonma-yon */
+.about-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  flex: 1;
+}
+
+/* Card — bir xil balandlik */
+.about-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(15, 20, 40, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 16px;
+  padding: 28px 20px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 320px;
+  justify-content: space-between;
+}
+
+.about-card:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(56, 189, 248, 0.12);
+}
+
+/* Nav tugmalar */
+.about-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  line-height: 1;
+  padding-bottom: 2px;
+}
+
+.about-nav-btn:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: #60a5fa;
+  color: white;
+}
+
+.about-nav-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Dots */
+.about-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.about-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.about-dot-active {
+  background: #38bdf8;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .about-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .about-row {
+    grid-template-columns: 1fr;
+  }
+}
