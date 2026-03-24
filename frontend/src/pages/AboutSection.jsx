@@ -31,7 +31,7 @@ export default function AboutSection({ profile, navigate, t }) {
         <h2 className="about-title">{t("about_title")}</h2>
 
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {/* Prev */}
+          {/* Prev tugma */}
           <button
             onClick={prev}
             disabled={!canPrev}
@@ -56,7 +56,7 @@ export default function AboutSection({ profile, navigate, t }) {
                 display: "flex",
                 gap: "24px",
                 transform: `translateX(-${page * 100}%)`,
-                transition: "transform 0.8s cubic-bezier(0.32, 0.72, 0, 1)",
+                transition: "transform 0.75s cubic-bezier(0.32, 0.72, 0, 1)",
                 willChange: "transform",
               }}
             >
@@ -64,7 +64,7 @@ export default function AboutSection({ profile, navigate, t }) {
                 <div
                   key={person.id}
                   style={{
-                    minWidth: `calc(${100 / VISIBLE}% - ${24 * (VISIBLE - 1) / VISIBLE}px)`,
+                    width: `calc(${100 / VISIBLE}% - ${24 * (VISIBLE - 1) / VISIBLE}px)`,
                     flexShrink: 0,
                   }}
                 >
@@ -74,7 +74,7 @@ export default function AboutSection({ profile, navigate, t }) {
             </div>
           </div>
 
-          {/* Next */}
+          {/* Next tugma */}
           <button
             onClick={next}
             disabled={!canNext}
@@ -102,7 +102,7 @@ export default function AboutSection({ profile, navigate, t }) {
   );
 }
 
-// ==================== CARD KOMPONENTI ====================
+// ==================== CARD KOMPONENTI (ichkarida) ====================
 function Card({ person, navigate, t }) {
   const [hovered, setHovered] = useState(false);
 
@@ -132,9 +132,7 @@ function Card({ person, navigate, t }) {
       <h3 className="about-card-name">{person.full_name}</h3>
 
       {/* Stack / Lavozim */}
-      <p className="about-card-description">
-        {person.stack}
-      </p>
+      <p className="about-card-description">{person.stack}</p>
 
       {/* Batafsil tugmasi */}
       <button
