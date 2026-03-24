@@ -1,91 +1,161 @@
-import { useMemo } from "react";
-import "../styles/AboutSection.css";
+import { useMemo, useState } from "react";
+import "../styles/AboutSection.css"
 
-const STARS = Array.from({ length: 35 }, (_, i) => ({
-  id: i,
-  left:     `${(i * 37 + 11) % 100}%`,
-  top:      `${(i * 53 + 7)  % 100}%`,
-  size:     ((i * 17) % 2) + 1,
-  delay:    `${(i * 0.3) % 3}s`,
-  duration: `${2 + (i % 3)}s`,
-}));
+const VISIBLE = 4; // bir vaqtda ko‘rinadigan kartalar soni
 
 export default function AboutSection({ profile, navigate, t }) {
+  const [page, setPage] = useState(0);
+
   const sorted = useMemo(
     () => [...(profile || [])].sort((a, b) => a.id - b.id),
     [profile]
   );
-  const total = sorted.length;
 
-  if (!profile || total === 0) return null;
+  const total = sorted.length;
+  if (total === 0) return null;
+
+  const totalPages = Math.ceil(total / VISIBLE);
+  const canPrev = page > 0;
+  const canNext = page < totalPages - 1;
+
+  const prev = () => setPage((p) => Math.max(0, p - 1));
+  const next = () => setPage((p) => Math.min(p + 1, totalPages - 1));
 
   return (
-    <section id="about" className="section section-dark about-section-bg">
+    <section
+      id="about"
+      className="about-section-bg"
+      style={{ padding: "80px 24px", minHeight: "100vh" }}
+    >
+      {/* Stars va Nebula fonlari (oldingi versiyangizda bor bo‘lsa qoldiring) */}
 
-      {/* ── Yulduzlar ── */}
-      <div className="about-stars" aria-hidden="true">
-        {STARS.map((s) => (
-          <div
-            key={s.id}
-            className="about-star"
-            style={{
-              left:              s.left,
-              top:               s.top,
-              width:             s.size + "px",
-              height:            s.size + "px",
-              animationDelay:    s.delay,
-              animationDuration: s.duration,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* ── Nebula ── */}
-      <div className="about-nebula about-nebula-1" aria-hidden="true" />
-      <div className="about-nebula about-nebula-2" aria-hidden="true" />
-      <div className="about-nebula about-nebula-3" aria-hidden="true" />
-
-      <div className="section-container about-content">
+      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <h2 className="about-title">{t("about_title")}</h2>
 
-        {/* ✅ Qatorga tizilgan — scroll yo'q, wrap bo'ladi */}
-        <div className="about-row">
-          {sorted.map((person) => (
-            <div
-              key={person.id}
-              className="about-card"
-              onClick={() => navigate(`/profile/${person.id}`)}
+        {/* Carousel */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {/* Prev tugma */}
+          <button
+            onClick={prev}
+            disabled={!canPrev}
+            className="about-nav-btn"
+            style={{
+              opacity: canPrev ? 1 : 0.3,
+              pointerEvents: canPrev ? "auto" : "none",
+            }}
+          >
+            ‹
+          </button>
+
+          {/* Carousel Container */}
+          <div
+            style={{
+              flex: 1,
+              overflow: "hidden",
+              borderRadius: "24px",
+              padding: "10px",
+              background: "transparent",        /* Muhim! Endi orqa fon section rangi bilan bir xil */
+            }}
             >
-              {/* Avatar */}
-              <div className="about-avatar-wrapper">
-                {person.avatar
-                  ? <img src={person.avatar} alt={person.full_name} className="about-avatar" />
-                  : <div className="about-avatar-placeholder">
-                      {person.full_name?.charAt(0)?.toUpperCase()}
-                    </div>
-                }
-              </div>
-
-              {/* Ism */}
-              <h3 className="about-card-name">{person.full_name}</h3>
-
-              {/* Stack */}
-              <span className="about-card-stack">{person.stack}</span>
-
-              {/* Batafsil tugma */}
-              <button
-                className="about-more-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/profile/${person.id}`);
-                }}
-              >
-                {t("about_more")}
-              </button>
+            <div
+              style={{
+                display: "flex",
+                gap: "24px",
+                transform: `translateX(-${page * 100}%)`,
+                transition: "transform 0.75s cubic-bezier(0.32, 0.72, 0, 1)",
+                willChange: "transform",
+              }}
+            >
+              {sorted.map((person) => (
+                <div
+                  key={person.id}
+                  style={{
+                    minWidth: `calc(${100 / VISIBLE}% - ${24 * (VISIBLE - 1) / VISIBLE}px)`,
+                    flexShrink: 0,
+                  }}
+                >
+                  <Card person={person} navigate={navigate} t={t} />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Next tugma */}
+          <button
+            onClick={next}
+            disabled={!canNext}
+            className="about-nav-btn"
+            style={{
+              opacity: canNext ? 1 : 0.3,
+              pointerEvents: canNext ? "auto" : "none",
+            }}
+          >
+            ›
+          </button>
         </div>
+
+        {/* Dots */}
+        {totalPages > 1 && (
+          <div className="about-dots" style={{ marginTop: "32px" }}>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i)}
+                className={`about-dot ${page === i ? "about-dot-active" : ""}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
+  );
+}
+
+// ==================== CARD KOMPONENTI ====================
+function Card({ person, navigate, t }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      onClick={() => navigate(`/profile/${person.id}`)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="about-card"
+      style={{
+        minHeight: "340px",
+      }}
+    >
+      {/* Avatar */}
+      <div className="about-avatar-wrapper">
+        {person.avatar ? (
+          <img
+            src={person.avatar}
+            alt={person.full_name}
+            className="about-avatar"
+          />
+        ) : (
+          <div className="about-avatar-placeholder">
+            {person.full_name?.charAt(0)?.toUpperCase() || "?"}
+          </div>
+        )}
+      </div>
+
+      {/* Ism */}
+      <h3 className="about-card-name">{person.full_name}</h3>
+
+      {/* Stack / Lavozim */}
+      <span className="about-card-stack">{person.stack}</span>
+
+      {/* Batafsil tugmasi */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/profile/${person.id}`);
+        }}
+        className="about-more-btn"
+      >
+        {t("about_more")}
+      </button>
+    </div>
   );
 }
