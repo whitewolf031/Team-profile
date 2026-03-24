@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import "../styles/AboutSection.css"
+import "../styles/AboutSection.css";
 
-const VISIBLE = 4; // bir vaqtda ko‘rinadigan kartalar soni
+const VISIBLE = 4;
 
 export default function AboutSection({ profile, navigate, t }) {
   const [page, setPage] = useState(0);
@@ -27,22 +27,16 @@ export default function AboutSection({ profile, navigate, t }) {
       className="about-section-bg"
       style={{ padding: "80px 24px", minHeight: "100vh" }}
     >
-      {/* Stars va Nebula fonlari (oldingi versiyangizda bor bo‘lsa qoldiring) */}
-
       <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <h2 className="about-title">{t("about_title")}</h2>
 
-        {/* Carousel */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {/* Prev tugma */}
+          {/* Prev */}
           <button
             onClick={prev}
             disabled={!canPrev}
             className="about-nav-btn"
-            style={{
-              opacity: canPrev ? 1 : 0.3,
-              pointerEvents: canPrev ? "auto" : "none",
-            }}
+            style={{ opacity: canPrev ? 1 : 0.3 }}
           >
             ‹
           </button>
@@ -54,15 +48,15 @@ export default function AboutSection({ profile, navigate, t }) {
               overflow: "hidden",
               borderRadius: "24px",
               padding: "10px",
-              background: "transparent",        /* Muhim! Endi orqa fon section rangi bilan bir xil */
+              background: "transparent",
             }}
-            >
+          >
             <div
               style={{
                 display: "flex",
                 gap: "24px",
                 transform: `translateX(-${page * 100}%)`,
-                transition: "transform 0.75s cubic-bezier(0.32, 0.72, 0, 1)",
+                transition: "transform 0.8s cubic-bezier(0.32, 0.72, 0, 1)",
                 willChange: "transform",
               }}
             >
@@ -80,15 +74,12 @@ export default function AboutSection({ profile, navigate, t }) {
             </div>
           </div>
 
-          {/* Next tugma */}
+          {/* Next */}
           <button
             onClick={next}
             disabled={!canNext}
             className="about-nav-btn"
-            style={{
-              opacity: canNext ? 1 : 0.3,
-              pointerEvents: canNext ? "auto" : "none",
-            }}
+            style={{ opacity: canNext ? 1 : 0.3 }}
           >
             ›
           </button>
@@ -96,7 +87,7 @@ export default function AboutSection({ profile, navigate, t }) {
 
         {/* Dots */}
         {totalPages > 1 && (
-          <div className="about-dots" style={{ marginTop: "32px" }}>
+          <div className="about-dots" style={{ marginTop: "36px" }}>
             {Array.from({ length: totalPages }).map((_, i) => (
               <button
                 key={i}
@@ -121,9 +112,6 @@ function Card({ person, navigate, t }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="about-card"
-      style={{
-        minHeight: "340px",
-      }}
     >
       {/* Avatar */}
       <div className="about-avatar-wrapper">
@@ -144,7 +132,9 @@ function Card({ person, navigate, t }) {
       <h3 className="about-card-name">{person.full_name}</h3>
 
       {/* Stack / Lavozim */}
-      <span className="about-card-stack">{person.stack}</span>
+      <p className="about-card-description">
+        {person.stack}
+      </p>
 
       {/* Batafsil tugmasi */}
       <button
