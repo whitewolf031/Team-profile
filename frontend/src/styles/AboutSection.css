@@ -57,7 +57,7 @@
   display: inline-block;
 
   line-height: 1.4;
-  min-height: 20px;           /* ikki qator uchun joy */
+  min-height: 10px;           /* ikki qator uchun joy */
   display: flex;
   align-items: center;
   justify-content: center;
