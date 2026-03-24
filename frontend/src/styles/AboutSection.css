@@ -62,7 +62,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  width: 90%;
+  width: 80%;
   margin: 0;
 }
 
@@ -110,18 +110,6 @@
   font-weight: bold;
   color: white;
 }
-
-/* STACK / LAVOZIM
-.about-card-stack {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  color: #38bdf8;
-  background: rgba(56,189,248,0.1);
-  border: 1px solid rgba(56,189,248,0.3);
-  border-radius: 9999px;
-  padding: 4px 16px;
-  display: inline-block;
-} */
 
 /* MORE BUTTON */
 .about-more-btn {
