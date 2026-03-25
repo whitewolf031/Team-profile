@@ -57,12 +57,12 @@
   display: inline-block;
 
   line-height: 1.4;
-  min-height: 10px;           /* ikki qator uchun joy */
+  min-height: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  width: 80%;
+  width: 100%;
   margin: 0;
 }
 
