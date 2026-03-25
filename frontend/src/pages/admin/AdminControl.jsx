@@ -26,18 +26,11 @@ const Icon = ({ name }) => {
 };
 
 const NAV_ITEMS = [
-<<<<<<< HEAD
-  { key: "information",  label: "Information",  icon: "user" },
-  { key: "experience",   label: "Experience",   icon: "briefcase" },
-  { key: "projects",     label: "Projects",     icon: "code" },
-  { key: "certificates", label: "Certificates", icon: "cert" },
-=======
   { key: "information",  label: "Information",  icon: "user"      },
   { key: "experience",   label: "Experience",   icon: "briefcase" },
   { key: "projects",     label: "Projects",     icon: "code"      },
   { key: "certificates", label: "Certificates", icon: "cert"      },
   { key: "contacts",     label: "Contacts",     icon: "contact"   }, // ← YANGI
->>>>>>> df286c7b6b90dc2f8d6b9371d9b06c49a2a03f74
 ];
 
 export default function AdminControl() {
@@ -47,11 +40,7 @@ export default function AdminControl() {
 
   const selectSection = (key) => {
     setActive(key);
-<<<<<<< HEAD
-    setSideOpen(false); // mobile da yopish
-=======
     setSideOpen(false);
->>>>>>> df286c7b6b90dc2f8d6b9371d9b06c49a2a03f74
   };
 
   return (
@@ -63,10 +52,6 @@ export default function AdminControl() {
           <button className="ac-logout" onClick={() => Logout(navigate)}>
             <Icon name="logout" /> <span>Chiqish</span>
           </button>
-<<<<<<< HEAD
-          {/* Mobile hamburger */}
-=======
->>>>>>> df286c7b6b90dc2f8d6b9371d9b06c49a2a03f74
           <button
             className="ac-hamburger"
             onClick={() => setSideOpen((s) => !s)}
@@ -78,10 +63,6 @@ export default function AdminControl() {
       </nav>
 
       <div className="ac-body">
-<<<<<<< HEAD
-        {/* Overlay (mobile) */}
-=======
->>>>>>> df286c7b6b90dc2f8d6b9371d9b06c49a2a03f74
         <div
           className={`ac-overlay ${sideOpen ? "visible" : ""}`}
           onClick={() => setSideOpen(false)}
@@ -109,15 +90,11 @@ export default function AdminControl() {
               <p>// chap tarafdagi menyudan bo'limni tanlang</p>
               <div className="ac-welcome-btns">
                 {NAV_ITEMS.map((item) => (
-<<<<<<< HEAD
-                  <button key={item.key} className="ac-welcome-btn" onClick={() => selectSection(item.key)}>
-=======
                   <button
                     key={item.key}
                     className="ac-welcome-btn"
                     onClick={() => selectSection(item.key)}
                   >
->>>>>>> df286c7b6b90dc2f8d6b9371d9b06c49a2a03f74
                     <Icon name={item.icon} /> {item.label}
                   </button>
                 ))}
@@ -129,10 +106,7 @@ export default function AdminControl() {
           {active === "experience"   && <ExperienceAdmin />}
           {active === "projects"     && <ProjectAdmin />}
           {active === "certificates" && <CertificateAdmin />}
-<<<<<<< HEAD
-=======
           {active === "contacts"     && <AdminContact />}  {/* ← YANGI */}
->>>>>>> df286c7b6b90dc2f8d6b9371d9b06c49a2a03f74
         </main>
       </div>
     </div>
