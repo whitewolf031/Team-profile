@@ -670,3 +670,62 @@
     .lang-dropdown-btn  { width: 100%; justify-content: center; }
     .lang-dropdown-menu { left: 0; right: 0; min-width: unset; }
 }
+/* ══════════════════════════════════════
+   QO'SHIMCHA RESPONSIVE FIXES
+══════════════════════════════════════ */
+
+/* Hero section - mobile */
+@media (max-width: 480px) {
+  .hero { padding-top: 70px; }
+  .hero-content {
+    padding: 28px 16px;
+    margin: 0 8px;
+    border-radius: 14px;
+  }
+  .hero-title-line1,
+  .hero-title-line2 { font-size: 36px !important; letter-spacing: 2px; }
+  .hero-description { font-size: 13px; }
+  .hero-stats { flex-direction: column; gap: 8px; align-items: center; }
+  .hero-stat-divider { width: 60px; height: 1px; }
+  .hero-badge { font-size: 0.7rem; padding: 4px 10px; }
+}
+
+/* Section paddings - mobile */
+@media (max-width: 640px) {
+  .section { padding: 60px 16px; }
+  .section-heading { font-size: 1.7rem; }
+  .section-header { margin-bottom: 36px; }
+}
+
+/* Projects grid - mobile */
+@media (max-width: 640px) {
+  .projects-grid { grid-template-columns: 1fr; gap: 16px; }
+  .project-content { padding: 20px 16px; }
+  .project-title { font-size: 1.1rem; }
+}
+
+/* Contact section - mobile */
+@media (max-width: 640px) {
+  .contact-wrap { gap: 36px; }
+  .contact-form-card { padding: 20px 16px; border-radius: 14px; }
+  .contact-form-header h3 { font-size: 1.1rem; }
+  .contact-info-item { padding: 12px 14px; gap: 12px; }
+  .contact-info-icon { width: 36px; height: 36px; font-size: 1rem; }
+  .contact-social-btns { gap: 8px; }
+  .contact-social-btn { padding: 8px 12px; font-size: 0.76rem; }
+}
+
+/* Nav - very small screens */
+@media (max-width: 360px) {
+  .nav-inner { padding: 0 12px; }
+  .logo { font-size: 16px; letter-spacing: 1px; }
+}
+
+/* Fix overflow on all screens */
+body, html {
+  overflow-x: hidden;
+}
+.portfolio-container {
+  overflow-x: hidden;
+  width: 100%;
+}

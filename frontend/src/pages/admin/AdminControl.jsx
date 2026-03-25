@@ -14,6 +14,7 @@ const Icon = ({ name }) => {
     code:      "M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z",
     cert:      "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z",
     logout:    "M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z",
+    menu:      "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z",
   };
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
@@ -23,15 +24,21 @@ const Icon = ({ name }) => {
 };
 
 const NAV_ITEMS = [
-  { key: "information", label: "Information",  icon: "user" },
-  { key: "experience",  label: "Experience",   icon: "briefcase" },
-  { key: "projects",    label: "Projects",     icon: "code" },
-  { key: "certificates",label: "Certificates", icon: "cert" },  // ✅ yangi
+  { key: "information",  label: "Information",  icon: "user" },
+  { key: "experience",   label: "Experience",   icon: "briefcase" },
+  { key: "projects",     label: "Projects",     icon: "code" },
+  { key: "certificates", label: "Certificates", icon: "cert" },
 ];
 
 export default function AdminControl() {
   const [active, setActive] = useState(null);
+  const [sideOpen, setSideOpen] = useState(false);
   const navigate = useNavigate();
+
+  const selectSection = (key) => {
+    setActive(key);
+    setSideOpen(false); // mobile da yopish
+  };
 
   return (
     <div className="ac-layout">
@@ -40,19 +47,33 @@ export default function AdminControl() {
         <div className="ac-nav-right">
           <span className="ac-badge">CYBERNEX</span>
           <button className="ac-logout" onClick={() => Logout(navigate)}>
-            <Icon name="logout" /> Chiqish
+            <Icon name="logout" /> <span>Chiqish</span>
+          </button>
+          {/* Mobile hamburger */}
+          <button
+            className="ac-hamburger"
+            onClick={() => setSideOpen((s) => !s)}
+            aria-label="Menu"
+          >
+            <Icon name="menu" />
           </button>
         </div>
       </nav>
 
       <div className="ac-body">
-        <aside className="ac-side">
+        {/* Overlay (mobile) */}
+        <div
+          className={`ac-overlay ${sideOpen ? "visible" : ""}`}
+          onClick={() => setSideOpen(false)}
+        />
+
+        <aside className={`ac-side ${sideOpen ? "open" : ""}`}>
           <div className="ac-side-label">BO'LIMLAR</div>
           {NAV_ITEMS.map((item) => (
             <button
               key={item.key}
               className={`ac-side-btn ${active === item.key ? "active" : ""}`}
-              onClick={() => setActive(item.key)}
+              onClick={() => selectSection(item.key)}
             >
               <Icon name={item.icon} />
               {item.label}
@@ -68,7 +89,7 @@ export default function AdminControl() {
               <p>// chap tarafdagi menyudan bo'limni tanlang</p>
               <div className="ac-welcome-btns">
                 {NAV_ITEMS.map((item) => (
-                  <button key={item.key} className="ac-welcome-btn" onClick={() => setActive(item.key)}>
+                  <button key={item.key} className="ac-welcome-btn" onClick={() => selectSection(item.key)}>
                     <Icon name={item.icon} /> {item.label}
                   </button>
                 ))}
@@ -79,7 +100,7 @@ export default function AdminControl() {
           {active === "information"  && <DevInfoAdmin />}
           {active === "experience"   && <ExperienceAdmin />}
           {active === "projects"     && <ProjectAdmin />}
-          {active === "certificates" && <CertificateAdmin />}  {/* ✅ */}
+          {active === "certificates" && <CertificateAdmin />}
         </main>
       </div>
     </div>
