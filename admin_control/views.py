@@ -1,14 +1,16 @@
 from .models import Blog, DevInfo, Experience, Project, Certificate
-from .serializers import (
+from .serializers.dev_info_serializers import (
     DevBlogAdminSerializer, DevInfoAdminSerializer,
     DevExperienceAdminSerializer, DevProjectAdminSerializer,
     CertificateAdminSerializer,
 )
+from .serializers.contact_admin_serializer import UserInfoAdminControlSerializer
 from rest_framework.permissions import IsAdminUser
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
+from myprofile.models import UsersInfo
 
 LANG_PARAMETER = OpenApiParameter(
     name='lang', type=OpenApiTypes.STR,
@@ -60,3 +62,10 @@ class DevAdminCertificateControl(LangMixin, viewsets.ModelViewSet):
     serializer_class   = CertificateAdminSerializer
     permission_classes = [IsAdminUser]
     parser_classes     = [MultiPartParser, FormParser]
+
+@extend_schema(tags=['Admin — contact'])
+class UserInfoAdminControlViewset(LangMixin, viewsets.ModelViewSet):
+    queryset           = UsersInfo.objects.all()
+    serializer_class   = UserInfoAdminControlSerializer
+    permission_classes = [IsAdminUser]
+    # parser_classes     = [MultiPartParser, FormParser]
