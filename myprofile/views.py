@@ -11,7 +11,7 @@ from .serializers import (
     PublicDevInfoSerializer,
     ContactSerializer
 )
-from admin_control.serializers import DevInfoDetailSerializer
+from admin_control.serializers.dev_info_serializers import DevInfoDetailSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from config.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_TOPIC_ID, TELEGRAM_GROUP_ID
