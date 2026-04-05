@@ -3,11 +3,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from myprofile.models import UsersInfo
 from myprofile.serializers import ContactSerializer
-from admin_control.models import (DevInfo, Experience, Project, Blog)
+from admin_control.models import (DevInfo, Experience, Project)
 from .serializers import (
     PublicProjectSerializer,
     PublicExperienceSerializer,
-    PublicBlogSerializer,
     PublicDevInfoSerializer,
     ContactSerializer
 )
@@ -184,12 +183,6 @@ class UserDevExperienceListView(generics.ListAPIView):
 class UserDevProjectListView(generics.ListAPIView):
     queryset = Project.objects.all()
     serializer_class = PublicProjectSerializer
-    permission_classes = [AllowAny]
-
-@extend_schema(tags=['Dev blog'], parameters=[LANG_PARAMETER])
-class UserDevBlogtListView(generics.ListAPIView):
-    queryset = Blog.objects.all()
-    serializer_class = PublicBlogSerializer
     permission_classes = [AllowAny]
 
 @extend_schema(tags=['Dev Info'], parameters=[LANG_PARAMETER])

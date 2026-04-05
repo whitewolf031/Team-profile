@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 
 class DevInfo(models.Model):
     full_name_uz = models.CharField(max_length=255)
@@ -192,45 +191,6 @@ class Project(models.Model):
         elif lang == 'en':
             return self.description_en or self.description_uz
         return self.description_uz
-
-    def __str__(self):
-        return self.title_uz
-
-class Blog(models.Model):
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="blogs"
-    )
-
-    # Title — 3 tilda
-    title_uz = models.CharField(max_length=255)
-    title_ru = models.CharField(max_length=255, blank=True, null=True)
-    title_en = models.CharField(max_length=255, blank=True, null=True)
-
-    # Content — 3 tilda
-    content_uz = models.TextField()
-    content_ru = models.TextField(blank=True, null=True)
-    content_en = models.TextField(blank=True, null=True)
-
-    image = models.ImageField(upload_to="blog_images/", blank=True, null=True)
-    is_published = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def get_title(self, lang='uz'):
-        if lang == 'ru':
-            return self.title_ru or self.title_uz
-        elif lang == 'en':
-            return self.title_en or self.title_uz
-        return self.title_uz
-
-    def get_content(self, lang='uz'):
-        if lang == 'ru':
-            return self.content_ru or self.content_uz
-        elif lang == 'en':
-            return self.content_en or self.content_uz
-        return self.content_uz
 
     def __str__(self):
         return self.title_uz

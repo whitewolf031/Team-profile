@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from myprofile.models import UsersInfo
-from admin_control.models import DevInfo, Experience, Project, Certificate, Blog
+from admin_control.models import DevInfo, Experience, Project, Certificate
 from drf_spectacular.utils import extend_schema_field
 from drf_spectacular.types import OpenApiTypes
 
@@ -21,7 +21,7 @@ class PublicExperienceSerializer(serializers.ModelSerializer):
     title            = serializers.SerializerMethodField()
     achievements     = serializers.SerializerMethodField()
     responsibilities = serializers.SerializerMethodField()
-    teaching_focus   = serializers.SerializerMethodField()  # ✅ field e'lon qilindi
+    teaching_focus   = serializers.SerializerMethodField()
 
     class Meta:
         model = Experience
@@ -50,7 +50,7 @@ class PublicExperienceSerializer(serializers.ModelSerializer):
         return obj.get_responsibilities(self._get_lang())
 
     @extend_schema_field(OpenApiTypes.STR)
-    def get_teaching_focus(self, obj):          # ✅ typo tuzatildi
+    def get_teaching_focus(self, obj):
         return obj.get_teaching_fucus(self._get_lang())
 
 class PublicProjectSerializer(serializers.ModelSerializer):
@@ -76,30 +76,6 @@ class PublicProjectSerializer(serializers.ModelSerializer):
     @extend_schema_field(OpenApiTypes.STR)
     def get_description(self, obj):
         return obj.get_description(self._get_lang())
-
-class PublicBlogSerializer(serializers.ModelSerializer):
-    title   = serializers.SerializerMethodField()
-    content = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Blog
-        fields = [
-            'id', 'author',
-            'title', 'content',
-            'image', 'is_published', 'created_at',
-        ]
-
-    def _get_lang(self):
-        request = self.context.get('request')
-        return request.query_params.get('lang', 'uz') if request else 'uz'
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_title(self, obj):
-        return obj.get_title(self._get_lang())
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_content(self, obj):
-        return obj.get_content(self._get_lang())
 
 class PublicDevInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
