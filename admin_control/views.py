@@ -8,14 +8,14 @@ from .serializers.dev_info_serializers import (
 )
 from .serializers.contact_admin_serializer import UserInfoAdminControlSerializer
 from rest_framework.permissions import IsAdminUser
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from myprofile.models import UsersInfo
-from blog_news.telegram import send_blog_to_telegram
 import logging
-
+ 
 logger = logging.getLogger(__name__)
 
 LANG_PARAMETER = OpenApiParameter(
@@ -75,8 +75,29 @@ class AdminNewsViewSet(LangMixin, viewsets.ModelViewSet):
             return AdminNewsListSerializer
         return AdminNewsSerializer
  
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    def _parse_booleans(self, data):
+        """FormData dan string 'true'/'false' ni boolean ga o'zgartirish"""
+        data = data.copy()
+        for field in ('is_published', 'send_to_telegram'):
+            if field in data:
+                val = data[field]
+                if isinstance(val, str):
+                    data[field] = val.lower() in ('true', '1', 'yes')
+        return data
  
-    def perform_update(self, serializer):
+    def create(self, request, *args, **kwargs):
+        data       = self._parse_booleans(request.data)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(author=request.user)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+ 
+    def update(self, request, *args, **kwargs):
+        partial  = kwargs.pop('partial', False)
+        instance = self.get_object()
+        data     = self._parse_booleans(request.data)
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response(serializer.data)

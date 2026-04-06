@@ -11,7 +11,6 @@ class DevInfo(models.Model):
 
     experience = models.IntegerField()
 
-    # About — 3 tilda
     about_uz = models.TextField(blank=True, null=True)
     about_ru = models.TextField(blank=True, null=True)
     about_en = models.TextField(blank=True, null=True)
@@ -21,6 +20,11 @@ class DevInfo(models.Model):
     phone = models.CharField(max_length=50)
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
     telegram_chat_id = models.CharField(max_length=50, blank=True, null=True)
+
+    instagram_url = models.URLField(blank=True, null=True)
+    telegram_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
