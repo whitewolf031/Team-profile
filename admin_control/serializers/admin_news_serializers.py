@@ -1,7 +1,16 @@
 from rest_framework import serializers
 from blog_news.models import Blog
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class AdminNewsSerializer(serializers.ModelSerializer):
+    author = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), 
+        required=False, 
+        allow_null=True
+    )
+
     class Meta:
         model  = Blog
         fields = [

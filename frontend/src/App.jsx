@@ -6,6 +6,7 @@ import Logout from "./pages/Logout";
 import AdminControl from "./pages/admin/AdminControl";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import BlogNews from "./pages/BlogNews";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         />
         <Route path="/logout" element={<Logout />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/blog" element={<BlogNews />} />
       </Routes>
     </BrowserRouter>
   );

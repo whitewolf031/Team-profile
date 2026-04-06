@@ -6,7 +6,6 @@ from ..models import DevInfo, Experience, Project, Certificate
 # ─────────────────────────────────────────
 # ADMIN serializers — barcha til fieldlari
 # ─────────────────────────────────────────
-
 class DevInfoAdminSerializer(serializers.ModelSerializer):
     """Admin: 3 tilda barcha fieldlar ko'rinadi va tahrirlash mumkin"""
     class Meta:
@@ -18,6 +17,7 @@ class DevInfoAdminSerializer(serializers.ModelSerializer):
             'experience',
             'about_uz',     'about_ru',     'about_en',
             'email', 'phone', 'avatar', 'telegram_chat_id',
+            'instagram_url', 'telegram_url', 'linkedin_url',
             'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
@@ -105,16 +105,39 @@ class DevExperienceSerializer(serializers.ModelSerializer):
     def get_teaching_focus(self, obj):   
         return obj.get_teaching_focus(self._lang())
 
-class DevProjectSerializer(serializers.ModelSerializer):
-    title       = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
+class DevProjectAdminSerializer(serializers.ModelSerializer):
+    # Texnologiyalarni rasmdagidek ko'p tanlovli (MultipleChoice) qilish
+    technologies = serializers.MultipleChoiceField(
+        choices=Project.TECHNOLOGY_CHOICES
+    )
+    
+    project_image = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
-        model  = Project
-        fields = ['id', 'dev', 'title', 'description',
-                  'technologies', 'project_url', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        model = Project
+        fields = [
+            'id', 'dev', 'project_image', 
+            'title_uz', 'title_ru', 'title_en',
+            'description_uz', 'description_ru', 'description_en',
+            'technologies', 'project_url'
+        ]
+        
+    def to_representation(self, instance):
+        """Ma'lumotni qaytarishda rasmni to'liq URL qilib berish"""
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        
+        # Rasm URL manzilini absolute qilish
+        if instance.project_image and request:
+            data['project_image'] = request.build_absolute_uri(instance.project_image.url)
+        
+        # Technologies JSONField bo'lgani uchun uni representationda ro'yxat (list) qilib qaytaradi
+        return data
 
+    def validate_technologies(self, value):
+        """Tanlangan texnologiyalarni list formatida saqlashni ta'minlash"""
+        return list(value)
+    
     def _lang(self):
         req = self.context.get('request')
         return req.query_params.get('lang', 'uz') if req else 'uz'
@@ -145,33 +168,32 @@ class CertificateSerializer(serializers.ModelSerializer):
     def get_issuer(self, obj): return obj.get_issuer(self._lang())
 
 class DevInfoSerializer(serializers.ModelSerializer):
+    """Asosiy list uchun (masalan index sahifa)"""
     full_name = serializers.SerializerMethodField()
     stack     = serializers.SerializerMethodField()
     about     = serializers.SerializerMethodField()
 
     class Meta:
         model  = DevInfo
-        fields = ['id', 'full_name', 'stack', 'experience',
-                  'about', 'email', 'phone', 'avatar']
+        fields = [
+            'id', 'full_name', 'stack', 'experience', 'about', 
+            'email', 'phone', 'avatar', 
+            'instagram_url', 'telegram_url', 'linkedin_url'
+        ]
 
     def _lang(self):
         req = self.context.get('request')
         return req.query_params.get('lang', 'uz') if req else 'uz'
 
     @extend_schema_field(OpenApiTypes.STR)
-    def get_full_name(self, obj): 
-        return obj.get_full_name(self._lang())
-
+    def get_full_name(self, obj): return obj.get_full_name(self._lang())
     @extend_schema_field(OpenApiTypes.STR)
-    def get_stack(self, obj):     
-        return obj.get_stack(self._lang())
-
+    def get_stack(self, obj):     return obj.get_stack(self._lang())
     @extend_schema_field(OpenApiTypes.STR)
-    def get_about(self, obj):     
-        return obj.get_about(self._lang())
-
+    def get_about(self, obj):     return obj.get_about(self._lang())
+    
 class DevInfoDetailSerializer(serializers.ModelSerializer):
-    """Detail endpoint — nested ma'lumotlar bilan, faqat so'ralgan tilda"""
+    """To'liq ma'lumot (Portfolio sahifasi uchun)"""
     full_name    = serializers.SerializerMethodField()
     stack        = serializers.SerializerMethodField()
     about        = serializers.SerializerMethodField()
@@ -184,6 +206,7 @@ class DevInfoDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'full_name', 'stack', 'experience', 'about',
             'email', 'phone', 'avatar', 'telegram_chat_id',
+            'instagram_url', 'telegram_url', 'linkedin_url',
             'created_at', 'updated_at',
             'experiences', 'projects', 'certificates',
         ]
@@ -194,27 +217,19 @@ class DevInfoDetailSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_full_name(self, obj): return obj.get_full_name(self._lang())
-
     @extend_schema_field(OpenApiTypes.STR)
     def get_stack(self, obj):     return obj.get_stack(self._lang())
-
     @extend_schema_field(OpenApiTypes.STR)
     def get_about(self, obj):     return obj.get_about(self._lang())
 
     @extend_schema_field(DevExperienceSerializer(many=True))
     def get_experiences(self, obj):
-        return DevExperienceSerializer(
-            obj.experiences.all(), many=True, context=self.context
-        ).data
+        return DevExperienceSerializer(obj.experiences.all(), many=True, context=self.context).data
 
-    @extend_schema_field(DevProjectSerializer(many=True))
+    @extend_schema_field(DevProjectAdminSerializer(many=True))
     def get_projects(self, obj):
-        return DevProjectSerializer(
-            obj.projects.all(), many=True, context=self.context
-        ).data
+        return DevProjectAdminSerializer(obj.projects.all(), many=True, context=self.context).data
 
     @extend_schema_field(CertificateSerializer(many=True))
     def get_certificates(self, obj):
-        return CertificateSerializer(
-            obj.certificates.all(), many=True, context=self.context
-        ).data
+        return CertificateSerializer(obj.certificates.all(), many=True, context=self.context).data
