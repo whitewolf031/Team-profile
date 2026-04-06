@@ -1,7 +1,7 @@
 from drf_spectacular.utils import extend_schema_field
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import serializers
-from ..models import Blog, DevInfo, Experience, Project, Certificate
+from ..models import DevInfo, Experience, Project, Certificate
 
 # ─────────────────────────────────────────
 # ADMIN serializers — barcha til fieldlari
@@ -52,20 +52,6 @@ class DevProjectAdminSerializer(serializers.ModelSerializer):
             'technologies', 'project_url', 'created_at',
         ]
         read_only_fields = ['id', 'created_at']
-
-class DevBlogAdminSerializer(serializers.ModelSerializer):
-    """Admin: 3 tilda barcha fieldlar"""
-    author_name = serializers.CharField(source="author.username", read_only=True)
-
-    class Meta:
-        model  = Blog
-        fields = [
-            'id', 'author', 'author_name',
-            'title_uz',   'title_ru',   'title_en',
-            'content_uz', 'content_ru', 'content_en',
-            'image', 'is_published', 'created_at',
-        ]
-        read_only_fields = ['id', 'created_at', 'author_name']
 
 class CertificateAdminSerializer(serializers.ModelSerializer):
     """Admin: 3 tilda barcha fieldlar"""
@@ -138,27 +124,6 @@ class DevProjectSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_description(self, obj): return obj.get_description(self._lang())
-
-class DevBlogSerializer(serializers.ModelSerializer):
-    author_name = serializers.CharField(source="author.username", read_only=True)
-    title       = serializers.SerializerMethodField()
-    content     = serializers.SerializerMethodField()
-
-    class Meta:
-        model  = Blog
-        fields = ['id', 'author', 'author_name',
-                  'title', 'content', 'image', 'is_published', 'created_at']
-        read_only_fields = ['id', 'created_at', 'author_name']
-
-    def _lang(self):
-        req = self.context.get('request')
-        return req.query_params.get('lang', 'uz') if req else 'uz'
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_title(self, obj):   return obj.get_title(self._lang())
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_content(self, obj): return obj.get_content(self._lang())
 
 class CertificateSerializer(serializers.ModelSerializer):
     title  = serializers.SerializerMethodField()

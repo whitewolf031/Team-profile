@@ -7,9 +7,17 @@ root = environ.Path(__file__) - 2
 env = environ.Env()
 environ.Env.read_env(env.str(root(), '.env'))
 
+SECRET_KEY = env.str('SECRET_KEY')
+DEBUG = env.bool('DEBUG', default=False)
+ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default='').split(',')
+
+BASE_DIR = root()
+
 TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN", default=None)
 TELEGRAM_GROUP_ID   = env.str("TELEGRAM_GROUP_ID",   default=None)
 TELEGRAM_TOPIC_ID   = env.str("TELEGRAM_TOPIC_ID",   default=None)
+TELEGRAM_CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID")
+SITE_URL            = os.getenv("SITE_URL", "https://cybernex-team.uz")
 
 # Agar muhim bo'lsa, majburiy qilish mumkin
 if not TELEGRAM_BOT_TOKEN:
@@ -18,12 +26,6 @@ if not TELEGRAM_GROUP_ID:
     raise ValueError("TELEGRAM_GROUP_ID .env faylda yo'q!")
 if not TELEGRAM_TOPIC_ID:
     raise ValueError("TELEGRAM_TOPIC_ID .env faylda yo'q!")
-
-SECRET_KEY = env.str('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default='').split(',')
-
-BASE_DIR = root()
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,7 +45,8 @@ INSTALLED_APPS += [
 
 INSTALLED_APPS += [
     "myprofile",
-    "admin_control"
+    "admin_control",
+    "blog_news"
 ]
 
 INSTALLED_APPS += ['corsheaders',]
