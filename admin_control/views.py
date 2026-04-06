@@ -44,12 +44,38 @@ class DevAdminExperienceControl(LangMixin, viewsets.ModelViewSet):
     serializer_class   = DevExperienceAdminSerializer
     permission_classes = [IsAdminUser]
 
-@extend_schema(tags=['Admin — Projects'], parameters=[LANG_PARAMETER])
-class DevAdminProjectControl(LangMixin, viewsets.ModelViewSet):
-    queryset           = Project.objects.select_related('dev').all()
-    serializer_class   = DevProjectAdminSerializer
+@extend_schema(tags=['Admin — Projects'])
+class DevAdminProjectControl(viewsets.ModelViewSet):
+    """
+    Adminlar uchun loyihalarni boshqarish (CRUD).
+    Rasm yuklash uchun MultiPartParser ishlatiladi.
+    """
+    queryset = Project.objects.select_related('dev').all().order_by('-created_at')
+    serializer_class = DevProjectAdminSerializer
     permission_classes = [IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]
+
+    def get_serializer_context(self):
+        """
+        Serializer ichida request va lang dan foydalanish uchun context yuboramiz.
+        """
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
+    def perform_create(self, serializer):
+        """
+        Loyiha yaratilayotganda qo'shimcha mantiq kerak bo'lsa (masalan dev ni avtomatik biriktirish):
+        """
+        serializer.save()
+
+    @extend_schema(summary="Loyihalar ro'yxatini olish")
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(summary="Yangi loyiha qo'shish")
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 @extend_schema(tags=['Admin — Certificates'], parameters=[LANG_PARAMETER])
 class DevAdminCertificateControl(LangMixin, viewsets.ModelViewSet):

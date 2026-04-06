@@ -1,171 +1,96 @@
-import { useMemo, useState, useRef, useEffect } from "react";
+// components/AboutSection.jsx
+import { useState } from "react";
+import { FaInstagram, FaTelegramPlane, FaLinkedin } from "react-icons/fa";
 import "../styles/AboutSection.css";
 
 export default function AboutSection({ profile, navigate, t }) {
-  const [page, setPage] = useState(0);
-  const trackRef = useRef(null);
-  const touchStartX = useRef(null);
-
-  // Screen kengligiga qarab nechta karta ko'rinishini aniqlash
-  const [visible, setVisible] = useState(4);
-
-  useEffect(() => {
-    const update = () => {
-      const w = window.innerWidth;
-      if (w < 480) setVisible(1);
-      else if (w < 768) setVisible(1);
-      else if (w < 1024) setVisible(2);
-      else setVisible(4);
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  const sorted = useMemo(
-    () => [...(profile || [])].sort((a, b) => a.id - b.id),
-    [profile]
-  );
-
-  const total = sorted.length;
-  if (total === 0) return null;
-
-  const totalPages = Math.ceil(total / visible);
-  const canPrev = page > 0;
-  const canNext = page < totalPages - 1;
-
-  const prev = () => setPage((p) => Math.max(0, p - 1));
-  const next = () => setPage((p) => Math.min(p + 1, totalPages - 1));
-
-  // Touch / swipe support
-  const onTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-  const onTouchEnd = (e) => {
-    if (touchStartX.current === null) return;
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) next();
-      else prev();
-    }
-    touchStartX.current = null;
-  };
-
-  // Karta kengligi: gap 24px (desktop), 12px (mobile)
-  const gap = window.innerWidth < 768 ? 12 : 24;
-  // translateX hisobi: har bir page = (karta kengligi + gap) * visible * page
-  // Lekin biz % ishlatmaymiz — trackRef kengligi asosida hisoblash yaxshiroq
-  // Oddiy yondashuv: har bir sahifa viewport kengligi asosida
-  const cardWidthPercent = 100 / visible;
-  const translateX = page * (cardWidthPercent * visible + (gap * (visible - 1) / (window.innerWidth / 100)));
+  const sorted = [...(profile || [])].sort((a, b) => a.id - b.id);
+  if (!sorted.length) return null;
 
   return (
-    <section
-      id="about"
-      className="about-section-bg"
-      style={{ padding: "80px 24px", minHeight: "100vh" }}
-    >
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <h2 className="about-title">{t("about_title")}</h2>
-
-        <div className="about-carousel-outer">
-          {/* Prev */}
-          <button
-            onClick={prev}
-            disabled={!canPrev}
-            className="about-nav-btn"
-            aria-label="Previous"
-          >
-            ‹
-          </button>
-
-          {/* Carousel */}
-          <div
-            className="about-carousel-viewport"
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-          >
-            <div
-              ref={trackRef}
-              className="about-carousel-track"
-              style={{
-                transform: `translateX(calc(-${page * 100 / visible * visible}% - ${page * gap}px))`,
-              }}
-            >
-              {sorted.map((person) => (
-                <div
-                  key={person.id}
-                  style={{
-                    width: `calc(${100 / visible}% - ${gap * (visible - 1) / visible}px)`,
-                    flexShrink: 0,
-                  }}
-                >
-                  <Card person={person} navigate={navigate} t={t} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Next */}
-          <button
-            onClick={next}
-            disabled={!canNext}
-            className="about-nav-btn"
-            aria-label="Next"
-          >
-            ›
-          </button>
+    <section id="about" className="about-section">
+      <div className="about-container">
+        {/* Sarlavha */}
+        <div className="about-header">
+          <p className="about-tag">// jamoa</p>
+          <h2 className="about-heading">
+            Bizning jamoa bilan <span className="about-heading-accent">tanishing</span>
+          </h2>
+          <div className="about-heading-line" />
         </div>
 
-        {/* Dots */}
-        {totalPages > 1 && (
-          <div className="about-dots" style={{ marginTop: "36px" }}>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i)}
-                className={`about-dot ${page === i ? "about-dot-active" : ""}`}
-              />
-            ))}
-          </div>
-        )}
+        {/* Grid — 4 ta ustun */}
+        <div className="about-grid">
+          {sorted.map((person) => (
+            <PersonCard key={person.id} person={person} navigate={navigate} />
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function Card({ person, navigate, t }) {
+function PersonCard({ person, navigate }) {
   return (
-    <div
-      onClick={() => navigate(`/profile/${person.id}`)}
-      className="about-card"
-    >
-      <div className="about-avatar-wrapper">
-        {person.avatar ? (
-          <img
-            src={person.avatar}
-            alt={person.full_name}
-            className="about-avatar"
-          />
-        ) : (
-          <div className="about-avatar-placeholder">
-            {person.full_name?.charAt(0)?.toUpperCase() || "?"}
+    <div className="about-card" onClick={() => navigate(`/profile/${person.id}`)}>
+      {/* Rasm */}
+      <div className="about-card__img-wrap">
+        {person.avatar
+          ? <img src={person.avatar} alt={person.full_name} className="about-card__img" />
+          : <div className="about-card__img-ph">{person.full_name?.charAt(0)?.toUpperCase() || "?"}</div>
+        }
+        {/* Hover overlay — 2-rasmdagi kabi */}
+        <div className="about-card__overlay">
+          <div className="about-card__overlay-socials">
+            {person.instagram && (
+              <a href={person.instagram} target="_blank" rel="noreferrer"
+                onClick={e => e.stopPropagation()} className="about-ov-btn ig">
+                <FaInstagram />
+              </a>
+            )}
+            {person.telegram && (
+              <a href={person.telegram} target="_blank" rel="noreferrer"
+                onClick={e => e.stopPropagation()} className="about-ov-btn tg">
+                <FaTelegramPlane />
+              </a>
+            )}
+            {person.linkedin && (
+              <a href={person.linkedin} target="_blank" rel="noreferrer"
+                onClick={e => e.stopPropagation()} className="about-ov-btn li">
+                <FaLinkedin />
+              </a>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
-      <h3 className="about-card-name">{person.full_name}</h3>
-      <p className="about-card-description">{person.stack}</p>
+      {/* Info */}
+      <div className="about-card__info">
+        <h3 className="about-card__name">{person.full_name}</h3>
+        <p className="about-card__role">{person.stack}</p>
 
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          navigate(`/profile/${person.id}`);
-        }}
-        className="about-more-btn"
-      >
-        {t("about_more")}
-      </button>
+        {/* Tagdagi social ikonkalar */}
+        <div className="about-card__socials">
+          {person.instagram && (
+            <a href={person.instagram} target="_blank" rel="noreferrer"
+              onClick={e => e.stopPropagation()} className="about-social ig">
+              <FaInstagram />
+            </a>
+          )}
+          {person.telegram && (
+            <a href={person.telegram} target="_blank" rel="noreferrer"
+              onClick={e => e.stopPropagation()} className="about-social tg">
+              <FaTelegramPlane />
+            </a>
+          )}
+          {person.linkedin && (
+            <a href={person.linkedin} target="_blank" rel="noreferrer"
+              onClick={e => e.stopPropagation()} className="about-social li">
+              <FaLinkedin />
+            </a>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

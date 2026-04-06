@@ -40,7 +40,7 @@ const css = `
   .di-text { color: #64748b; font-size: 0.82rem; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .di-actions { display: flex; gap: 6px; flex-shrink: 0; }
   .di-btn-icon { background: #1a2235; border: 1px solid #1e2d45; color: #64748b; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-  .di-btn-icon:hover        { color: #38bdf8; border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+  .di-btn-icon:hover         { color: #38bdf8; border-color: #38bdf8; background: rgba(56,189,248,0.08); }
   .di-btn-icon.danger:hover { color: #f87171; border-color: #f87171; background: rgba(248,113,113,0.08); }
   .di-empty { text-align: center; padding: 3rem; color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
   .di-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -72,13 +72,22 @@ const css = `
   .di-error { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: #f87171; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; }
 `;
 
-// ✅ Model ga mos: full_name_uz/ru/en, stack_uz/ru/en
 const EMPTY_FORM = {
-  full_name_uz: "", full_name_ru: "", full_name_en: "",
-  stack_uz: "",     stack_ru: "",     stack_en: "",
+  full_name_uz: "", 
+  full_name_ru: "", 
+  full_name_en: "",
+  stack_uz: "",     
+  stack_ru: "",     
+  stack_en: "",
   experience: "",
-  about_uz: "",     about_ru: "",     about_en: "",
-  email: "", phone: "", telegram_chat_id: "",
+  about_uz: "",     
+  about_ru: "",     
+  about_en: "",
+  email: "", phone: "", 
+  telegram_chat_id: "",
+  instagram_url: "",
+  telegram_url: "",
+  linkedin_url: ""
 };
 
 export default function DevInfoAdmin() {
@@ -116,6 +125,9 @@ export default function DevInfoAdmin() {
         email:            item.email            || "",
         phone:            item.phone            || "",
         telegram_chat_id: item.telegram_chat_id || "",
+        instagram_url:        item.instagram        || "",
+        telegram_url:    item.telegram_link    || "",
+        linkedin_url:         item.linkedin         || "",
       });
       setAvatarPreview(item.avatar || null);
       setEditing(item.id);
@@ -145,12 +157,12 @@ export default function DevInfoAdmin() {
     setSaving(true);
     try {
       const fd = new FormData();
-      // ✅ barcha 3 tildagi fieldlar
       const fields = [
         "full_name_uz", "full_name_ru", "full_name_en",
         "stack_uz", "stack_ru", "stack_en",
         "about_uz", "about_ru", "about_en",
         "email", "phone", "telegram_chat_id",
+        "instagram_url", "telegram_url", "linkedin_url"
       ];
       fields.forEach((k) => { if (form[k]) fd.append(k, form[k]); });
       if (form.experience) fd.append("experience", Number(form.experience));
@@ -202,7 +214,6 @@ export default function DevInfoAdmin() {
                 : <Icon name="user" />}
             </div>
             <div className="di-body">
-              {/* ✅ full_name_uz ko'rsatiladi */}
               <div className="di-name">{item.full_name_uz}</div>
               <div className="di-meta">
                 {item.stack_uz         && <span className="di-tag di-tag-blue">{item.stack_uz}</span>}
@@ -233,7 +244,6 @@ export default function DevInfoAdmin() {
               <div className="di-modal-body">
                 {error && <div className="di-error">{error}</div>}
 
-                {/* AVATAR */}
                 <div className="di-field">
                   <label className="di-label">AVATAR</label>
                   <div className="di-upload">
@@ -247,10 +257,8 @@ export default function DevInfoAdmin() {
                   </div>
                 </div>
 
-                {/* LangTabs */}
                 <LangTabs lang={formLang} setLang={setFormLang} />
 
-                {/* ✅ TO'LIQ ISM — 3 tilda */}
                 <div className="di-field">
                   <label className="di-label">TO'LIQ ISM * ({formLang.toUpperCase()})</label>
                   {formLang === "uz" && <input className="di-input" placeholder="Sardorbek Ergashev" value={form.full_name_uz} onChange={f("full_name_uz")} />}
@@ -258,7 +266,6 @@ export default function DevInfoAdmin() {
                   {formLang === "en" && <input className="di-input" placeholder="Sardorbek Ergashev" value={form.full_name_en} onChange={f("full_name_en")} />}
                 </div>
 
-                {/* ✅ STACK — 3 tilda */}
                 <div className="di-field">
                   <label className="di-label">STACK ({formLang.toUpperCase()})</label>
                   {formLang === "uz" && <input className="di-input" placeholder="Python, Django, React" value={form.stack_uz} onChange={f("stack_uz")} />}
@@ -266,14 +273,11 @@ export default function DevInfoAdmin() {
                   {formLang === "en" && <input className="di-input" placeholder="Python, Django, React" value={form.stack_en} onChange={f("stack_en")} />}
                 </div>
 
-                {/* TAJRIBA */}
                 <div className="di-field">
                   <label className="di-label">TAJRIBA (yil)</label>
-                  <input className="di-input" type="number" placeholder="2" min="0"
-                    value={form.experience} onChange={f("experience")} />
+                  <input className="di-input" type="number" placeholder="2" min="0" value={form.experience} onChange={f("experience")} />
                 </div>
 
-                {/* ✅ ABOUT — 3 tilda */}
                 <div className="di-field">
                   <label className="di-label">O'ZINGIZ HAQINGIZDA ({formLang.toUpperCase()})</label>
                   {formLang === "uz" && <textarea className="di-textarea" placeholder="Men full-stack dasturchiman..." value={form.about_uz} onChange={f("about_uz")} />}
@@ -281,28 +285,37 @@ export default function DevInfoAdmin() {
                   {formLang === "en" && <textarea className="di-textarea" placeholder="I am a full-stack developer..." value={form.about_en} onChange={f("about_en")} />}
                 </div>
 
-                {/* EMAIL + PHONE */}
                 <div className="di-row">
                   <div className="di-field">
                     <label className="di-label">EMAIL</label>
-                    <input className="di-input" type="email" placeholder="email@example.com"
-                      value={form.email} onChange={f("email")} />
+                    <input className="di-input" type="email" placeholder="email@example.com" value={form.email} onChange={f("email")} />
                   </div>
                   <div className="di-field">
                     <label className="di-label">TELEFON</label>
-                    <input className="di-input" placeholder="+998 90 123 45 67"
-                      value={form.phone} onChange={f("phone")} />
+                    <input className="di-input" placeholder="+998 90 123 45 67" value={form.phone} onChange={f("phone")} />
                   </div>
                 </div>
 
-                {/* TELEGRAM */}
                 <div className="di-field">
                   <label className="di-label">TELEGRAM CHAT ID</label>
-                  <input className="di-input" placeholder="123456789"
-                    value={form.telegram_chat_id} onChange={f("telegram_chat_id")} />
-                  <div className="di-tg-hint">
-                    Chat ID olish uchun <span>@userinfobot</span> ga /start yuboring
+                  <input className="di-input" placeholder="123456789" value={form.telegram_chat_id} onChange={f("telegram_chat_id")} />
+                  <div className="di-tg-hint">Chat ID olish uchun <span>@userinfobot</span> ga /start yuboring</div>
+                </div>
+
+                <div className="di-row">
+                  <div className="di-field">
+                    <label className="di-label">INSTAGRAM LINK</label>
+                    <input className="di-input" placeholder="https://instagram.com/user" value={form.instagram_url} onChange={f("instagram_url")} />
                   </div>
+                  <div className="di-field">
+                    <label className="di-label">TELEGRAM LINK</label>
+                    <input className="di-input" placeholder="https://t.me/user" value={form.telegram_url} onChange={f("telegram_url")} />
+                  </div>
+                </div>
+
+                <div className="di-field">
+                  <label className="di-label">LINKEDIN LINK</label>
+                  <input className="di-input" placeholder="https://linkedin.com/in/user" value={form.linkedin_url} onChange={f("linkedin_url")} />
                 </div>
               </div>
 

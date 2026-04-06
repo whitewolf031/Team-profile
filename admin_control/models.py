@@ -161,6 +161,8 @@ class Project(models.Model):
         ("sqlite", "SQLite"),
     ]
 
+    project_image = models.ImageField(upload_to="projects_image/", blank=True, null=True)
+
     dev = models.ForeignKey(
         DevInfo,
         on_delete=models.CASCADE,

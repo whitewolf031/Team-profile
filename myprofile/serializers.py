@@ -56,12 +56,14 @@ class PublicExperienceSerializer(serializers.ModelSerializer):
 class PublicProjectSerializer(serializers.ModelSerializer):
     title       = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    # Rasmning to'liq URL'ini olish uchun metod field qo'shamiz
+    project_image = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = [
             'id', 'dev',
-            'title', 'description',
+            'title', 'description', 'project_image',
             'technologies', 'project_url', 'created_at',
         ]
 
@@ -77,6 +79,18 @@ class PublicProjectSerializer(serializers.ModelSerializer):
     def get_description(self, obj):
         return obj.get_description(self._get_lang())
 
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_project_image(self, obj):
+        """
+        Rasm mavjud bo'lsa, uning to'liq URL manzilini qaytaradi.
+        """
+        if obj.project_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.project_image.url)
+            return obj.project_image.url  # Agar request bo'lmasa, nisbiy yo'lni qaytaradi
+        return None
+    
 class PublicDevInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     stack     = serializers.SerializerMethodField()

@@ -1,0 +1,540 @@
+/* AdminBlogNews.css – o'zgartirishsiz qoldi (faqat video yuklash endi upload-zone bilan bir xil chiroyli dizaynda) */
+.di-input {
+  width: 100%;
+  background: #0f172a !important;
+  border: 1px solid #1e2d45 !important;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #f1f5f9;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.di-input:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+}
+
+.di-area {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.modal-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  position: relative;
+  background: #111827;
+  border: 1px solid #1e2d45;
+  width: 95%;
+  max-width: 650px;
+  max-height: 90vh;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modal-scroll-area {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .modal-card {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .hide-mobile {
+    display: none;
+  }
+  .modal-scroll-area {
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+}
+
+.lang-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #0f172a;
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.lang-tabs button {
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.lang-tabs button.active {
+  background: #1e293b;
+  color: #38bdf8;
+}
+
+.upload-zone {
+  border: 2px dashed #1e2d45;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.upload-zone:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.02);
+}
+
+.upload-zone.has-file {
+  border-style: solid;
+  border-color: #38bdf8;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  font-size: 2.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.settings-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #0f172a;
+  padding: 16px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.switch-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.switch-item input {
+  accent-color: #38bdf8;
+  width: 18px;
+  height: 18px;
+}
+
+.title-gradient {
+  background: linear-gradient(to right, #fff, #64748b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Video yuklash endi upload-zone bilan bir xil – chiroyli va izchil */
+.upload-zone.video-upload {
+  margin-bottom: 0;
+}
+
+/* Yangi qo'shilgan va o'zgartirilgan stillar (AdminBlogNews.css ga qo'shing) */
+
+.modal-header-new {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #1e2d45;
+  background: #111827;
+}
+
+.modal-title-new {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.close-x-btn-new {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.close-x-btn-new:hover {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+/* Modal footer yangi dizayn */
+.modal-footer-new {
+  padding: 20px 24px;
+  border-top: 1px solid #1e2d45;
+  background: #111827;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel-new {
+  padding: 10px 20px;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #1e2d45;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn-cancel-new:hover {
+  background: #1e2937;
+  border-color: #334155;
+}
+
+.btn-save-new {
+  padding: 10px 28px;
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+  transition: all 0.3s;
+}
+
+.btn-save-new:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* Empty state markazga joylashtirish (4-rasm kabi) */
+.empty-state-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Header buttonni 4-rasm uslubida yanada chiroyli qilish */
+.new-btn {
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+}
+
+.new-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* Mavjud stillarni saqlash (oldingi CSS dan) */
+.di-input, .di-area, .lang-tabs, .upload-zone, .form-grid, .input-group, .settings-panel, .switch-item, .title-gradient {
+  /* Oldingi stillaringiz o'zgartirishsiz qoladi */
+}
+
+/* AdminBlogNews.css ga qo'shing yoki o'zgartiring (oxiriga qo'shish tavsiya etiladi) */
+
+/* Yangi header bo'limi - Blog & News oq rangda */
+.blog-header-section {
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.blog-header-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blog-title-white {
+  color: #ffffff !important;           /* Oq rang qilindi */
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  background: none;                    /* gradientni o'chirib, toza oq qilindi */
+  -webkit-text-fill-color: #ffffff;
+}
+
+.subtitle {
+  color: #64748b;
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+}
+
+/* Yangi qo'shish buttoni - eng pastga joylashtirilgan */
+.new-add-btn {
+  align-self: flex-start;              /* Chap tomonda qoladi */
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+  transition: all 0.3s ease;
+}
+
+.new-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+}
+
+/* Empty state (markazda qoladi) */
+.empty-state-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 420px;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.05rem;
+}
+
+/* Qolgan barcha stillar (oldingi versiyadan) o'zgartirishsiz qoladi */
+.modal-header-new,
+.modal-title-new,
+.close-x-btn-new,
+.modal-footer-new,
+.btn-cancel-new,
+.btn-save-new,
+.di-input,
+.lang-tabs,
+.upload-zone,
+.form-grid,
+.input-group,
+.settings-panel,
+.switch-item,
+.title-gradient {
+}
+
+/* AdminBlogNews.css ga qo'shing */
+
+.blog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.blog-card {
+  background: #111827;
+  border: 1px solid #1e2d45;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+
+.blog-card:hover {
+  border-color: #38bdf8;
+}
+
+.blog-card-content {
+  flex: 1;
+}
+
+.blog-card-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #e2e8f0;
+}
+
+.blog-type {
+  color: #38bdf8;
+  font-size: 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.blog-date {
+  color: #64748b;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.blog-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit, .btn-delete {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-edit {
+  background: #1e2937;
+  color: #38bdf8;
+}
+
+.btn-delete {
+  background: #1e2937;
+  color: #f87171;
+}
+
+.btn-edit:hover { background: #334155; }
+.btn-delete:hover { background: #431e2a; }
+
+/* AdminBlogNews.css ga qo'shing (oxiriga) */
+
+.blog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.blog-card {
+  background: #111827;
+  border: 1px solid #1e2d45;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+
+.blog-card:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.1);
+}
+
+.blog-card-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #e2e8f0;
+}
+
+.di-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.di-tag {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.di-tag-blue   { background: rgba(56,189,248,0.1);  color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+.di-tag-green  { background: rgba(52,211,153,0.1);  color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+
+.di-text {
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.di-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.di-btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #1a2235;
+  border: 1px solid #1e2d45;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.di-btn-icon:hover {
+  color: #38bdf8;
+  border-color: #38bdf8;
+  background: rgba(56,189,248,0.1);
+}
+
+.di-btn-icon.danger:hover {
+  color: #f87171;
+  border-color: #f87171;
+  background: rgba(248,113,113,0.1);
+}
