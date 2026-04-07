@@ -63,11 +63,30 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 CSRF_COOKIE_SECURE = False
-CORS_ALLOWED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS = [
     "https://cybernex-team.uz",
     "https://www.cybernex-team.uz",
     "https://api.cybernex-team.uz",
