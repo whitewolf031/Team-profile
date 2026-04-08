@@ -1,73 +1,57 @@
 from rest_framework import serializers
 from blog_news.models import Blog
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from typing import Optional
+from admin_control.models import DevInfo
 
 class AdminNewsSerializer(serializers.ModelSerializer):
+    # author ID orqali DevInfo modeliga bog'lanadi
     author = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), 
-        required=False, 
-        allow_null=True
+        queryset=DevInfo.objects.all(),
+        required=True
     )
 
     class Meta:
-        model  = Blog
+        model = Blog
         fields = [
-            "id",
-            "author",
+            "id", "author",
             "title_uz", "title_ru", "title_en",
             "content_uz", "content_ru", "content_en",
-            "news_type",
-            "image", "video",
-            "is_published",
-            "send_to_telegram",
-            "telegram_sent",
-            "created_at",
-            "updated_at",
+            "news_type", "image", "video",
+            "is_published", "send_to_telegram", "telegram_sent",
+            "created_at", "updated_at",
         ]
-        read_only_fields = [
-            "id", "author", "telegram_sent", "created_at", "updated_at",
-        ]
-        extra_kwargs = {
-            "title_ru":    {"required": False, "allow_blank": True, "allow_null": True},
-            "title_en":    {"required": False, "allow_blank": True, "allow_null": True},
-            "content_ru":  {"required": False, "allow_blank": True, "allow_null": True},
-            "content_en":  {"required": False, "allow_blank": True, "allow_null": True},
-            "image":       {"required": False, "allow_null": True},
-            "video":       {"required": False, "allow_null": True},
-            "is_published":     {"required": False},
-            "send_to_telegram": {"required": False},
-        }
+        read_only_fields = ["id", "telegram_sent", "created_at", "updated_at"]
 
     def validate(self, attrs):
-        title_uz   = attrs.get('title_uz',   '') or ''
-        content_uz = attrs.get('content_uz', '') or ''
-
-        if not title_uz.strip():
-            raise serializers.ValidationError({"title_uz": "O'zbekcha sarlavha majburiy."})
-        if not content_uz.strip():
-            raise serializers.ValidationError({"content_uz": "O'zbekcha kontent majburiy."})
+        # Yangi post yaratilayotganda majburiy maydonlar
+        if not self.instance:
+            if not attrs.get('title_uz'):
+                raise serializers.ValidationError({"title_uz": "O'zbekcha sarlavha majburiy."})
+            if not attrs.get('content_uz'):
+                raise serializers.ValidationError({"content_uz": "O'zbekcha matn majburiy."})
         return attrs
 
     def validate_image(self, value):
-        if value and hasattr(value, 'size'):
+        if value and not isinstance(value, str) and hasattr(value, 'size'):
             if value.size > 10 * 1024 * 1024:
-                raise serializers.ValidationError("Rasm hajmi 10MB dan oshmasligi kerak.")
-            allowed = ['image/jpeg', 'image/png', 'image/webp']
-            if hasattr(value, 'content_type') and value.content_type not in allowed:
-                raise serializers.ValidationError("Faqat JPEG, PNG, WEBP formatlar qabul qilinadi.")
+                raise serializers.ValidationError("Rasm 10MB dan oshmasin")
         return value
 
     def validate_video(self, value):
-        if value and hasattr(value, 'size'):
+        if value and not isinstance(value, str) and hasattr(value, 'size'):
             if value.size > 100 * 1024 * 1024:
-                raise serializers.ValidationError("Video hajmi 100MB dan oshmasligi kerak.")
+                raise serializers.ValidationError("Video 100MB dan oshmasin")
         return value
 
     def to_representation(self, instance):
-        data    = super().to_representation(instance)
+        data = super().to_representation(instance)
         request = self.context.get('request')
+        
+        # Muallifning ismini qo'shib yuboramiz
+        if instance.author:
+            data['author_name'] = instance.author.full_name_uz
+            
+        # To'liq URL manzillarini hosil qilish
         if instance.image and request:
             data['image'] = request.build_absolute_uri(instance.image.url)
         if instance.video and request:
@@ -76,20 +60,18 @@ class AdminNewsSerializer(serializers.ModelSerializer):
 
 class AdminNewsListSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
+    author_name = serializers.CharField(source='author.full_name_uz', read_only=True)
 
     class Meta:
-        model  = Blog
+        model = Blog
         fields = [
-            "id", "title_uz", "news_type",
+            "id", "title_uz", "news_type", "author_name",
             "is_published", "send_to_telegram", "telegram_sent",
             "image_url", "created_at",
         ]
-        read_only_fields = fields
 
-    def get_image_url(self, obj):
+    def get_image_url(self, obj) -> Optional[str]:
         if obj.image:
             request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
         return None

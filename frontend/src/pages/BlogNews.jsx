@@ -151,10 +151,6 @@ export default function BlogNews() {
                 <span className="nav-num">05.</span>Blog
               </button>
 
-              <a href="https://github.com/cybernexteamuz-prog" target="_blank" rel="noopener noreferrer" className="nav-github-btn">
-                GitHub
-              </a>
-
               <div className="lang-dropdown-wrap">
                 <button className="lang-dropdown-btn" onClick={() => setLangOpen(!langOpen)}>
                   <span className="lang-flag">{lang === "uz" ? "🇺🇿" : lang === "ru" ? "🇷🇺" : "🇬🇧"}</span>

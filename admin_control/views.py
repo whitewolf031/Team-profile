@@ -14,7 +14,10 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from myprofile.models import UsersInfo
+from rest_framework.decorators import action
+from blog_news.telegram import send_blog_to_telegram
 import logging
+import threading
  
 logger = logging.getLogger(__name__)
 
@@ -90,40 +93,80 @@ class UserInfoAdminControlViewset(LangMixin, viewsets.ModelViewSet):
     serializer_class   = UserInfoAdminControlSerializer
     permission_classes = [IsAdminUser]
 
-@extend_schema(tags=['Admin - news'])
-class AdminNewsViewSet(LangMixin, viewsets.ModelViewSet):
-    queryset           = Blog.objects.all().order_by('-created_at')
+@extend_schema(tags=['Admin — news'])
+class AdminNewsViewSet(viewsets.ModelViewSet):
+    queryset = Blog.objects.all().order_by('-created_at')
     permission_classes = [IsAdminUser]
-    parser_classes     = [MultiPartParser, FormParser]
- 
+    parser_classes = [MultiPartParser, FormParser]
+
     def get_serializer_class(self):
         if self.action == 'list':
             return AdminNewsListSerializer
         return AdminNewsSerializer
- 
-    def _parse_booleans(self, data):
-        """FormData dan string 'true'/'false' ni boolean ga o'zgartirish"""
-        data = data.copy()
+
+    def _parse_data(self, data):
+        """PickleError (500) va Boolean xatolarini oldini olish"""
+        if hasattr(data, 'dict'):
+            new_data = data.dict()
+        else:
+            new_data = dict(data)
+            
         for field in ('is_published', 'send_to_telegram'):
-            if field in data:
-                val = data[field]
+            if field in new_data:
+                val = new_data[field]
                 if isinstance(val, str):
-                    data[field] = val.lower() in ('true', '1', 'yes')
-        return data
- 
+                    new_data[field] = val.lower() in ('true', '1', 'yes')
+        return new_data
+
     def create(self, request, *args, **kwargs):
-        data       = self._parse_booleans(request.data)
+        data = self._parse_data(request.data)
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(author=request.user)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
- 
+        
+        # author endi request.user emas, frontenddan kelgan DevInfo ID-si bo'ladi
+        instance = serializer.save()
+        
+        # Telegramga yuborish (Sizning telegram.py orqali)
+        if instance.send_to_telegram:
+            thread = threading.Thread(target=self.send_to_telegram_worker, args=(instance.id,))
+            thread.daemon = True
+            thread.start()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     def update(self, request, *args, **kwargs):
-        partial  = kwargs.pop('partial', False)
+        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        data     = self._parse_booleans(request.data)
+        data = self._parse_data(request.data)
+        
         serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        updated_instance = serializer.save()
+        
+        # Agar hali yuborilmagan bo'lsa va checkbox belgilansa yuboramiz
+        if updated_instance.send_to_telegram and not updated_instance.telegram_sent:
+            thread = threading.Thread(target=self.send_to_telegram_worker, args=(updated_instance.id,))
+            thread.daemon = True
+            thread.start()
+
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def authors_list(self, request):
+        """Frontenddagi 'Muallif' selecti uchun barcha DevInfolarni beradi"""
+        authors = DevInfo.objects.all()
+        return Response([{"id": a.id, "full_name": a.full_name_uz} for a in authors])
+
+    def send_to_telegram_worker(self, blog_id):
+        """Fonda telegram.py funksiyasini ishlatuvchi worker"""
+        try:
+            blog = Blog.objects.get(id=blog_id)
+            # Sizning telegram.py dagi funksiyangiz
+            success = send_blog_to_telegram(blog)
+            
+            if success:
+                blog.telegram_sent = True
+                blog.save(update_fields=['telegram_sent'])
+                logger.info(f"Blog #{blog_id} muvaffaqiyatli Telegramga yuborildi.")
+        except Exception as e:
+            logger.error(f"Workerda xato (Blog ID: {blog_id}): {e}")

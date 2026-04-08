@@ -5,7 +5,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 def send_blog_to_telegram(blog) -> bool:
     token      = getattr(settings, 'TELEGRAM_BOT_TOKEN', None)
     channel_id = getattr(settings, 'TELEGRAM_CHANNEL_ID', None)

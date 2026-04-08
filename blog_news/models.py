@@ -1,6 +1,5 @@
 from django.db import models
-from django.conf import settings
-
+from admin_control.models import DevInfo
 
 class Blog(models.Model):
 
@@ -10,7 +9,7 @@ class Blog(models.Model):
         CYBERSECURITY = 'cybersecurity-news', 'Cybersecurity News'
 
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        DevInfo,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

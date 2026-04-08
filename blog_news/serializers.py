@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Blog
+from typing import Optional
 
 class UserNewsSerializer(serializers.ModelSerializer):
     title   = serializers.SerializerMethodField()
@@ -28,13 +29,13 @@ class UserNewsSerializer(serializers.ModelSerializer):
             return request.query_params.get('lang', 'uz')
         return 'uz'
 
-    def get_title(self, obj):
+    def get_title(self, obj) -> str:
         return obj.get_title(self._get_lang())
 
-    def get_content(self, obj):
+    def get_content(self, obj) -> str:
         return obj.get_content(self._get_lang())
 
-    def get_image(self, obj):
+    def get_image(self, obj) -> Optional[str]:
         """Rasm mavjud bo'lsa absolute URL qaytaradi"""
         if obj.image:
             request = self.context.get('request')
@@ -43,7 +44,7 @@ class UserNewsSerializer(serializers.ModelSerializer):
             return obj.image.url
         return None
 
-    def get_video(self, obj):
+    def get_video(self, obj) -> Optional[str]:
         """Video mavjud bo'lsa absolute URL qaytaradi"""
         if obj.video:
             request = self.context.get('request')
