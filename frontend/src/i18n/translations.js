@@ -2,6 +2,7 @@ const translations = {
     uz: {
         nav_home: "Bosh sahifa",
         nav_about: "Biz haqimizda",
+        nav_team: "Bizning jamoa",
         nav_projects: "Loyihalar",
         nav_contact: "Bog'lanish",
         hero_badge: "Ishga tayyor",
@@ -46,6 +47,7 @@ const translations = {
     ru: {
         nav_home: "Главная",
         nav_about: "О нас",
+        nav_team: "Наша команда",
         nav_projects: "Проекты",
         nav_contact: "Контакт",
         hero_badge: "Готовы к работе",
@@ -90,6 +92,7 @@ const translations = {
     en: {
         nav_home: "Home",
         nav_about: "About",
+        nav_team: "Our Team",
         nav_projects: "Projects",
         nav_contact: "Contact",
         hero_badge: "Available for work",
